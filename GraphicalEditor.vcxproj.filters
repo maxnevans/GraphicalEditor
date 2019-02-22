@@ -21,6 +21,12 @@
     <ClCompile Include="Source\BaseShape.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Line.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ShapesList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="Resource\main.manifest">
@@ -29,6 +35,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BaseShape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Line.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ShapesList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

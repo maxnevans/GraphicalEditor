@@ -142,13 +142,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\BaseShape.cpp" />
+    <ClCompile Include="Source\Line.cpp" />
     <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\ShapesList.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="Resource\main.manifest" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BaseShape.h" />
+    <ClInclude Include="Include\Line.h" />
+    <ClInclude Include="Include\ShapesList.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
