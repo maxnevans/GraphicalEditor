@@ -4,8 +4,7 @@ class Line :
 	public BaseShape
 {
 public:
-	Line(Gdiplus::Graphics* const graphics);
-	void Redraw() override;
+	void Redraw(Gdiplus::Graphics* const graphics) override;
 	~Line();
 };
 
