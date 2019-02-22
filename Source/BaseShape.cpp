@@ -1,7 +1,12 @@
 #include "..\Include\BaseShape.h"
 
-BaseShape::BaseShape()
+using namespace Gdiplus;
+
+BaseShape::BaseShape(Graphics* const graphics)
+	:
+	graphics(graphics)
 {
+
 }
 
 void BaseShape::SetPoints(int x1, int y1, int x2, int y2)
