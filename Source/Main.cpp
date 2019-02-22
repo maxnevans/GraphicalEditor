@@ -11,7 +11,7 @@
 #define BID_RECTANGLE	0x0002
 #define BID_ELLIPSE		0x0003
 #define BID_CIRCLE		0x0005
-#define BID_LINEZ		0x0006
+#define BID_SQUARE		0x0006
 
 #define B_WIDTH			140
 #define B_HEIGHT		30
@@ -71,6 +71,29 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
 			InitUI(hWnd);
 			break;
+		case WM_COMMAND:
+			switch (LOWORD(wParam))
+			{
+				case BID_LINE:
+					
+					break;
+				case BID_RECTANGLE:
+
+					break;
+				case BID_SQUARE:
+
+					break;
+				case BID_ELLIPSE:
+
+					break;
+				case BID_CIRCLE:
+
+					break;
+				case BID_TRIANGLE:
+
+					break;
+			}
+			break;
 		case WM_CLOSE:
 			DestroyWindow(hWnd);
 			return 0;
@@ -98,12 +121,12 @@ void goError(const wchar_t* description, DWORD code)
 
 void InitUI(HWND hWnd)
 {
-	DrawButton(hWnd, L"Line", 0, 0, B_WIDTH, B_HEIGHT, BID_LINE);
+	DrawButton(hWnd, L"Line", B_WIDTH*0, 0, B_WIDTH, B_HEIGHT, BID_LINE);
 	DrawButton(hWnd, L"Rectangle", B_WIDTH, 0, B_WIDTH, B_HEIGHT, BID_RECTANGLE);
 	DrawButton(hWnd, L"Ellipse", B_WIDTH*2, 0, B_WIDTH, B_HEIGHT, BID_ELLIPSE);
 	DrawButton(hWnd, L"Triangle", B_WIDTH*3, 0, B_WIDTH, B_HEIGHT, BID_TRIANGLE);
 	DrawButton(hWnd, L"Circle", B_WIDTH*4, 0, B_WIDTH, B_HEIGHT, BID_CIRCLE);
-	DrawButton(hWnd, L"LineZ", B_WIDTH*5, 0, B_WIDTH, B_HEIGHT, BID_LINEZ);
+	DrawButton(hWnd, L"Square", B_WIDTH*5, 0, B_WIDTH, B_HEIGHT, BID_SQUARE);
 }
 
 void DrawButton(
