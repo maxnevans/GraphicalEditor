@@ -4,7 +4,10 @@
 #include <string.h>
 #include <stdio.h>
 
-#define WND_CLASS L"MainWindow"
+#define WND_CLASS		L"MainWindow"
+#define WND_NAME		L"Graphical Editor"
+#define WND_WIDTH		1280
+#define WND_HEIGHT		720
 
 #define BID_LINE		0x0001
 #define BID_TRIANGLE	0x0004
@@ -12,6 +15,13 @@
 #define BID_ELLIPSE		0x0003
 #define BID_CIRCLE		0x0005
 #define BID_SQUARE		0x0006
+
+#define BC_LINE			L"Line"
+#define BC_TRIANGLE		L"Triangle"
+#define BC_RECTANGLE	L"Rectangle"
+#define BC_ELLIPSE		L"Ellipse"
+#define BC_CIRCLE		L"Circle"
+#define BC_SQUARE		L"Square"
 
 #define B_WIDTH			140
 #define B_HEIGHT		30
@@ -32,18 +42,26 @@ int WINAPI wWinMain(
 	WNDCLASSEX wcex = {0};
 	wcex.cbSize = sizeof(wcex);
 	wcex.hInstance = hInstance;
+	wcex.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
+	wcex.style = CS_HREDRAW | CS_VREDRAW;
 	wcex.lpfnWndProc = WndProc;
+	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wcex.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+	wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 	wcex.lpszClassName = WND_CLASS;
 
 	DWORD retVal = RegisterClassEx(&wcex);
 	if (!retVal) goError(L"register window");
+
+	RECT rDesk;
+	GetWindowRect(GetDesktopWindow(), &rDesk);
 	
 	HWND hWnd = CreateWindowW(
 		WND_CLASS,
-		L"Window Title",
-		WS_VISIBLE | WS_OVERLAPPEDWINDOW,
-		0,0,
-		1280, 720,
+		WND_NAME,
+		WS_VISIBLE | WS_OVERLAPPEDWINDOW & ~WS_SIZEBOX & ~WS_MAXIMIZEBOX,
+		(rDesk.right - WND_WIDTH) / 2, (rDesk.bottom - WND_HEIGHT) / 2,
+		WND_WIDTH, WND_HEIGHT,
 		NULL,
 		NULL,
 		hInstance,
@@ -68,7 +86,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	switch (uMsg)
 	{
 		case WM_CREATE:
-			SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
 			InitUI(hWnd);
 			break;
 		case WM_COMMAND:
@@ -121,12 +138,12 @@ void goError(const wchar_t* description, DWORD code)
 
 void InitUI(HWND hWnd)
 {
-	DrawButton(hWnd, L"Line", B_WIDTH*0, 0, B_WIDTH, B_HEIGHT, BID_LINE);
-	DrawButton(hWnd, L"Rectangle", B_WIDTH, 0, B_WIDTH, B_HEIGHT, BID_RECTANGLE);
-	DrawButton(hWnd, L"Ellipse", B_WIDTH*2, 0, B_WIDTH, B_HEIGHT, BID_ELLIPSE);
-	DrawButton(hWnd, L"Triangle", B_WIDTH*3, 0, B_WIDTH, B_HEIGHT, BID_TRIANGLE);
-	DrawButton(hWnd, L"Circle", B_WIDTH*4, 0, B_WIDTH, B_HEIGHT, BID_CIRCLE);
-	DrawButton(hWnd, L"Square", B_WIDTH*5, 0, B_WIDTH, B_HEIGHT, BID_SQUARE);
+	DrawButton(hWnd, BC_LINE, B_WIDTH * 0, 0, B_WIDTH, B_HEIGHT, BID_LINE);
+	DrawButton(hWnd, BC_RECTANGLE, B_WIDTH * 1, 0, B_WIDTH, B_HEIGHT, BID_RECTANGLE);
+	DrawButton(hWnd, BC_ELLIPSE, B_WIDTH * 2, 0, B_WIDTH, B_HEIGHT, BID_ELLIPSE);
+	DrawButton(hWnd, BC_TRIANGLE, B_WIDTH * 3, 0, B_WIDTH, B_HEIGHT, BID_TRIANGLE);
+	DrawButton(hWnd, BC_CIRCLE, B_WIDTH * 4, 0, B_WIDTH, B_HEIGHT, BID_CIRCLE);
+	DrawButton(hWnd, BC_SQUARE, B_WIDTH * 5, 0, B_WIDTH, B_HEIGHT, BID_SQUARE);
 }
 
 void DrawButton(
