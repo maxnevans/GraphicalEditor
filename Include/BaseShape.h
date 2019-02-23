@@ -10,7 +10,8 @@ public:
 	void SetColor(Gdiplus::Color color);
 
 protected:
-	int x1, x2, y1, y2;
+	int x, y, width, height;
+	int x1, y1, x2, y2;
 	Gdiplus::Color color;
 };
 
