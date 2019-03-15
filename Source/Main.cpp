@@ -41,7 +41,10 @@ void DrawButton(HWND, const wchar_t*, int, int, int, int, int);
 void OnPaint(HWND hWnd);
 void AddShape(HWND hWnd);
 void AddStretchShape(HWND hWnd);
+void HideTools();
+void ShowTools();
 
+HWND buttons[6];
 List* shapes;
 UINT currentTool;
 Gdiplus::Point points[2];
@@ -61,7 +64,6 @@ int WINAPI wWinMain(
 	WNDCLASSEX wcex = {0};
 	wcex.cbSize = sizeof(wcex);
 	wcex.hInstance = hInstance;
-	wcex.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
 	wcex.lpfnWndProc = WndProc;
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
@@ -119,12 +121,16 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case WM_PAINT:
 			OnPaint(hWnd);
 			break;
+		case WM_ERASEBKGND:
+			return TRUE;
 		case WM_LBUTTONDOWN:
+			HideTools();
 			points[0].X = GET_X_LPARAM(lParam);
 			points[0].Y = GET_Y_LPARAM(lParam);
 			AddStretchShape(hWnd);
 			break;
 		case WM_LBUTTONUP:
+			ShowTools();
 			points[1].X = GET_X_LPARAM(lParam);
 			points[1].Y = GET_Y_LPARAM(lParam);
 			AddShape(hWnd);
@@ -202,6 +208,7 @@ void DrawButton(
 	int id
 )
 {
+	static int countButtons = 0;
 	HWND hTest = CreateWindow(
 		L"Button",
 		caption,
@@ -213,7 +220,9 @@ void DrawButton(
 		GetModuleHandle(NULL),
 		NULL
 	);
-	if (!hTest) goError(L"line button");
+	if (!hTest) goError(L"button");
+	buttons[countButtons++] = hTest;
+
 }
 
 void OnPaint(HWND hWnd)
@@ -224,7 +233,10 @@ void OnPaint(HWND hWnd)
 	PAINTSTRUCT ps;
 
 	hdc = BeginPaint(hWnd, &ps);
-	Graphics graphics(hdc);
+	HDC hdcMem = CreateCompatibleDC(hdc);
+	HBITMAP hBmp = CreateCompatibleBitmap(hdc, WND_WIDTH, WND_HEIGHT);
+	SelectObject(hdcMem, hBmp);
+	Graphics graphics(hdcMem);
 
 	List* temp = new List();
 	while (!shapes->is_empty())
@@ -239,12 +251,15 @@ void OnPaint(HWND hWnd)
 	if (stretchShape)
 		stretchShape->Redraw(&graphics);
 
+	BitBlt(hdc, 0, 0, WND_WIDTH, WND_HEIGHT, hdcMem, 0, 0, SRCCOPY);
+	DeleteDC(hdcMem);
+	DeleteObject(hBmp);
 	EndPaint(hWnd, &ps);
 }
 
 void AddShape(HWND hWnd)
 {
-	Custom::BaseShape* shape;
+	Custom::BaseShape* shape = nullptr;
 	switch (currentTool)
 	{
 		case BID_LINE:
@@ -266,7 +281,7 @@ void AddShape(HWND hWnd)
 			shape = new Custom::Triangle();
 			break;
 		default:
-			throw new std::exception("Undefined shape!");
+			goError(L"undefined shape");
 	}
 	shape->SetPoints(points[0].X, points[0].Y, points[1].X, points[1].Y);
 	shape->SetColor(Gdiplus::Color(0xFFFF0000));
@@ -296,7 +311,23 @@ void AddStretchShape(HWND hWnd)
 		stretchShape = new Custom::Triangle();
 		break;
 	default:
-		throw new std::exception("Undefined shape!");
+		goError(L"undefined shape");
 	}
 	stretchShape->SetColor(Gdiplus::Color(0xFFFF0000));
+}
+
+void HideTools()
+{
+	for (int i = 0; i < 6; i++)
+	{
+		ShowWindow(buttons[i], SW_HIDE);
+	}
+}
+
+void ShowTools()
+{
+	for (int i = 0; i < 6; i++)
+	{
+		ShowWindow(buttons[i], SW_SHOW);
+	}
 }
