@@ -1,6 +1,6 @@
 #include "..\Include\Square.h"
 
-void Square::Redraw(Gdiplus::Graphics * const graphics)
+void Custom::Square::Redraw(Gdiplus::Graphics * const graphics)
 {
 	using namespace Gdiplus;
 

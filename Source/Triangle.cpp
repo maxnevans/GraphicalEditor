@@ -2,7 +2,7 @@
 
 
 
-void Triangle::Redraw(Gdiplus::Graphics* const graphics)
+void Custom::Triangle::Redraw(Gdiplus::Graphics* const graphics)
 {
 	using namespace Gdiplus;
 

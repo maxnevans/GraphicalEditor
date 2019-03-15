@@ -1,12 +1,12 @@
 #include "..\Include\Polygon.h"
 
-void Polygon::SetPoints(const Gdiplus::Point* points, int count)
+void Custom::Polygon::SetPoints(const Gdiplus::Point* points, int count)
 {
 	this->points = points;
 	this->pointsCount = count;
 }
 
-void Polygon::Redraw(Gdiplus::Graphics* const graphics)
+void Custom::Polygon::Redraw(Gdiplus::Graphics* const graphics)
 {
 	using namespace Gdiplus;
 

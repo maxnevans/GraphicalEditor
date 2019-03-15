@@ -42,9 +42,6 @@
     <ClCompile Include="Source\Square.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ShapesList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\List.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -77,9 +74,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Square.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\ShapesList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\List.h">

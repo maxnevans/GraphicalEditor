@@ -1,11 +1,16 @@
 #include <windows.h>
+#include <windowsx.h>
 #include <exception>
 #include <assert.h>
 #include <string.h>
 #include <stdio.h>
 #include <gdiplus.h>
 #include "../Include/List.h"
-#include "../Include/Line.h"
+#include "../Include/Square.h"
+#include "../Include/Rectangle.h"
+#include "../Include/Circle.h"
+#include "../Include/Ellipse.h"
+#include "../Include/Polygon.h"
 
 #define WND_CLASS		L"MainWindow"
 #define WND_NAME		L"Graphical Editor"
@@ -34,8 +39,11 @@ void goError(const wchar_t* description, DWORD code = ERROR_SUCCESS);
 void InitUI(HWND);
 void DrawButton(HWND, const wchar_t*, int, int, int, int, int);
 void OnPaint(HWND hWnd);
+void AddShape(HWND hWnd);
 
 List* shapes;
+UINT currentTool;
+Gdiplus::Point points[2];
 
 int WINAPI wWinMain(
 	HINSTANCE hInstance,
@@ -99,36 +107,44 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case WM_CREATE:
 			InitUI(hWnd);
 			shapes = new List;
+			currentTool = BID_LINE;
+			points[0].X = -1;
+			points[0].Y = -1;
+			points[1].X = -1;
+			points[1].Y = -1;
 			break;
 		case WM_PAINT:
 			OnPaint(hWnd);
+			break;
+		case WM_LBUTTONDOWN:
+			if (points[0].X == -1 || points[0].Y == -1)
+			{
+				points[0].X = GET_X_LPARAM(lParam);
+				points[0].Y = GET_Y_LPARAM(lParam);
+			}
+			else
+			{
+				points[1].X = GET_X_LPARAM(lParam);
+				points[1].Y = GET_Y_LPARAM(lParam);
+				AddShape(hWnd);
+				InvalidateRect(hWnd, NULL, FALSE);
+
+				points[0].X = -1;
+				points[0].Y = -1;
+				points[1].X = -1;
+				points[1].Y = -1;
+			}
 			break;
 		case WM_COMMAND:
 			switch (LOWORD(wParam))
 			{
 				case BID_LINE:
-				{
-					Line* line = new Line();
-					line->SetPoints(100, 100, 200, 200);
-					line->SetColor(Gdiplus::Color(0xFFFF0000));
-					shapes->push(line);
-					InvalidateRect(hWnd, NULL, TRUE);
-					break;
-				}
 				case BID_RECTANGLE:
-
-					break;
 				case BID_SQUARE:
-
-					break;
 				case BID_ELLIPSE:
-
-					break;
 				case BID_CIRCLE:
-
-					break;
 				case BID_TRIANGLE:
-
+					currentTool = wParam;
 					break;
 			}
 			break;
@@ -202,7 +218,7 @@ void OnPaint(HWND hWnd)
 	List* temp = new List();
 	while (!shapes->is_empty())
 	{
-		BaseShape* shape = (BaseShape*)shapes->pop();
+		Custom::BaseShape* shape = (Custom::BaseShape*)shapes->pop();
 		shape->Redraw(&graphics);
 		temp->push(shape);
 	}
@@ -210,4 +226,35 @@ void OnPaint(HWND hWnd)
 	shapes = temp;
 
 	EndPaint(hWnd, &ps);
+}
+
+void AddShape(HWND hWnd)
+{
+	Custom::BaseShape* shape;
+	switch (currentTool)
+	{
+		case BID_LINE:
+			shape = new Custom::Line();
+			break;
+		case BID_RECTANGLE:
+			shape = new Custom::Rectangle();
+			break;
+		case BID_SQUARE:
+			shape = new Custom::Square();
+			break;
+		case BID_ELLIPSE:
+			shape = new Custom::Ellipse();
+			break;
+		case BID_CIRCLE:
+			shape = new Custom::Circle();
+			break;
+		case BID_TRIANGLE:
+			shape = new Custom::Triangle();
+			break;
+		default:
+			throw new std::exception("Undefined shape!");
+	}
+	shape->SetPoints(points[0].X, points[0].Y, points[1].X, points[1].Y);
+	shape->SetColor(Gdiplus::Color(0xFFFF0000));
+	shapes->push(shape);
 }

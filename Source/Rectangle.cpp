@@ -1,7 +1,7 @@
 #include "..\Include\Rectangle.h"
 
 
-void Rectangle::Redraw(Gdiplus::Graphics* const graphics)
+void Custom::Rectangle::Redraw(Gdiplus::Graphics* const graphics)
 {
 	using namespace Gdiplus;
 	Pen pen(this->color);

@@ -1,6 +1,6 @@
 #include "..\Include\Ellipse.h"
 
-void Ellipse::Redraw(Gdiplus::Graphics* const graphics)
+void Custom::Ellipse::Redraw(Gdiplus::Graphics* const graphics)
 {
 	using namespace Gdiplus;
 

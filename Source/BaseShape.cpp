@@ -1,6 +1,6 @@
 #include "..\Include\BaseShape.h"
 
-void BaseShape::SetPoints(int x1, int y1, int x2, int y2)
+void Custom::BaseShape::SetPoints(int x1, int y1, int x2, int y2)
 {
 	this->x = (x1 - x2) < 0 ? x1 : x2;
 	this->y = (y1 - y2) < 0 ? y1 : y2;
@@ -13,7 +13,7 @@ void BaseShape::SetPoints(int x1, int y1, int x2, int y2)
 	this->y2 = this->y + this->height;
 }
 
-void BaseShape::SetColor(Gdiplus::Color color)
+void Custom::BaseShape::SetColor(Gdiplus::Color color)
 {
 	this->color = color;
 }

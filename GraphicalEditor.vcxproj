@@ -149,7 +149,6 @@
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Polygon.cpp" />
     <ClCompile Include="Source\Rectangle.cpp" />
-    <ClCompile Include="Source\ShapesList.cpp" />
     <ClCompile Include="Source\Square.cpp" />
     <ClCompile Include="Source\Triangle.cpp" />
   </ItemGroup>
@@ -164,7 +163,6 @@
     <ClInclude Include="Include\List.h" />
     <ClInclude Include="Include\Polygon.h" />
     <ClInclude Include="Include\Rectangle.h" />
-    <ClInclude Include="Include\ShapesList.h" />
     <ClInclude Include="Include\Square.h" />
     <ClInclude Include="Include\Triangle.h" />
   </ItemGroup>

@@ -1,6 +1,6 @@
 #include "..\Include\Circle.h"
 
-void Circle::Redraw(Gdiplus::Graphics * const graphics)
+void Custom::Circle::Redraw(Gdiplus::Graphics * const graphics)
 {
 	using namespace Gdiplus;
 
