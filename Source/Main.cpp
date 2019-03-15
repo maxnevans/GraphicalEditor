@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <gdiplus.h>
+#include "../Include/List.h"
+#include "../Include/Line.h"
 
 #define WND_CLASS		L"MainWindow"
 #define WND_NAME		L"Graphical Editor"
@@ -32,6 +34,8 @@ void goError(const wchar_t* description, DWORD code = ERROR_SUCCESS);
 void InitUI(HWND);
 void DrawButton(HWND, const wchar_t*, int, int, int, int, int);
 void OnPaint(HWND hWnd);
+
+List* shapes;
 
 int WINAPI wWinMain(
 	HINSTANCE hInstance,
@@ -94,7 +98,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		case WM_CREATE:
 			InitUI(hWnd);
-			
+			shapes = new List;
 			break;
 		case WM_PAINT:
 			OnPaint(hWnd);
@@ -103,8 +107,14 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			switch (LOWORD(wParam))
 			{
 				case BID_LINE:
-					
+				{
+					Line* line = new Line();
+					line->SetPoints(100, 100, 200, 200);
+					line->SetColor(Gdiplus::Color(0xFFFF0000));
+					shapes->push(line);
+					InvalidateRect(hWnd, NULL, TRUE);
 					break;
+				}
 				case BID_RECTANGLE:
 
 					break;
@@ -189,7 +199,15 @@ void OnPaint(HWND hWnd)
 	hdc = BeginPaint(hWnd, &ps);
 	Graphics graphics(hdc);
 
-	// Redraw there all shapes from the list
+	List* temp = new List();
+	while (!shapes->is_empty())
+	{
+		BaseShape* shape = (BaseShape*)shapes->pop();
+		shape->Redraw(&graphics);
+		temp->push(shape);
+	}
+	delete shapes;
+	shapes = temp;
 
 	EndPaint(hWnd, &ps);
 }

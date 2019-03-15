@@ -1,16 +1,5 @@
 #include "..\Include\Circle.h"
 
-
-
-Circle::Circle()
-{
-}
-
-
-Circle::~Circle()
-{
-}
-
 void Circle::Redraw(Gdiplus::Graphics * const graphics)
 {
 	using namespace Gdiplus;

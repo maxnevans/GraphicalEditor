@@ -142,17 +142,31 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\BaseShape.cpp" />
+    <ClCompile Include="Source\Circle.cpp" />
+    <ClCompile Include="Source\Ellipse.cpp" />
     <ClCompile Include="Source\Line.cpp" />
+    <ClCompile Include="Source\List.cpp" />
     <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Polygon.cpp" />
+    <ClCompile Include="Source\Rectangle.cpp" />
     <ClCompile Include="Source\ShapesList.cpp" />
+    <ClCompile Include="Source\Square.cpp" />
+    <ClCompile Include="Source\Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="Resource\main.manifest" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BaseShape.h" />
+    <ClInclude Include="Include\Circle.h" />
+    <ClInclude Include="Include\Ellipse.h" />
     <ClInclude Include="Include\Line.h" />
+    <ClInclude Include="Include\List.h" />
+    <ClInclude Include="Include\Polygon.h" />
+    <ClInclude Include="Include\Rectangle.h" />
     <ClInclude Include="Include\ShapesList.h" />
+    <ClInclude Include="Include\Square.h" />
+    <ClInclude Include="Include\Triangle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
