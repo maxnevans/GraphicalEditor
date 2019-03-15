@@ -40,10 +40,12 @@ void InitUI(HWND);
 void DrawButton(HWND, const wchar_t*, int, int, int, int, int);
 void OnPaint(HWND hWnd);
 void AddShape(HWND hWnd);
+void AddStretchShape(HWND hWnd);
 
 List* shapes;
 UINT currentTool;
 Gdiplus::Point points[2];
+Custom::BaseShape* stretchShape;
 
 int WINAPI wWinMain(
 	HINSTANCE hInstance,
@@ -112,27 +114,36 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			points[0].Y = -1;
 			points[1].X = -1;
 			points[1].Y = -1;
+			stretchShape = nullptr;
 			break;
 		case WM_PAINT:
 			OnPaint(hWnd);
 			break;
 		case WM_LBUTTONDOWN:
-			if (points[0].X == -1 || points[0].Y == -1)
-			{
-				points[0].X = GET_X_LPARAM(lParam);
-				points[0].Y = GET_Y_LPARAM(lParam);
-			}
-			else
+			points[0].X = GET_X_LPARAM(lParam);
+			points[0].Y = GET_Y_LPARAM(lParam);
+			AddStretchShape(hWnd);
+			break;
+		case WM_LBUTTONUP:
+			points[1].X = GET_X_LPARAM(lParam);
+			points[1].Y = GET_Y_LPARAM(lParam);
+			AddShape(hWnd);
+			InvalidateRect(hWnd, NULL, FALSE);
+
+			points[0].X = -1;
+			points[0].Y = -1;
+			points[1].X = -1;
+			points[1].Y = -1;
+			delete stretchShape;
+			stretchShape = nullptr;
+			break;
+		case WM_MOUSEMOVE:
+			if (points[0].X != -1 && points[0].Y)
 			{
 				points[1].X = GET_X_LPARAM(lParam);
 				points[1].Y = GET_Y_LPARAM(lParam);
-				AddShape(hWnd);
-				InvalidateRect(hWnd, NULL, FALSE);
-
-				points[0].X = -1;
-				points[0].Y = -1;
-				points[1].X = -1;
-				points[1].Y = -1;
+				stretchShape->SetPoints(points[0].X, points[0].Y, points[1].X, points[1].Y);
+				InvalidateRect(hWnd, NULL, TRUE);
 			}
 			break;
 		case WM_COMMAND:
@@ -225,6 +236,9 @@ void OnPaint(HWND hWnd)
 	delete shapes;
 	shapes = temp;
 
+	if (stretchShape)
+		stretchShape->Redraw(&graphics);
+
 	EndPaint(hWnd, &ps);
 }
 
@@ -257,4 +271,32 @@ void AddShape(HWND hWnd)
 	shape->SetPoints(points[0].X, points[0].Y, points[1].X, points[1].Y);
 	shape->SetColor(Gdiplus::Color(0xFFFF0000));
 	shapes->push(shape);
+}
+
+void AddStretchShape(HWND hWnd)
+{
+	switch (currentTool)
+	{
+	case BID_LINE:
+		stretchShape = new Custom::Line();
+		break;
+	case BID_RECTANGLE:
+		stretchShape = new Custom::Rectangle();
+		break;
+	case BID_SQUARE:
+		stretchShape = new Custom::Square();
+		break;
+	case BID_ELLIPSE:
+		stretchShape = new Custom::Ellipse();
+		break;
+	case BID_CIRCLE:
+		stretchShape = new Custom::Circle();
+		break;
+	case BID_TRIANGLE:
+		stretchShape = new Custom::Triangle();
+		break;
+	default:
+		throw new std::exception("Undefined shape!");
+	}
+	stretchShape->SetColor(Gdiplus::Color(0xFFFF0000));
 }
