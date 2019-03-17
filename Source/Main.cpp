@@ -37,7 +37,7 @@
 LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void goError(const wchar_t* description, DWORD code = ERROR_SUCCESS);
 void InitUI(HWND);
-void DrawButton(HWND, const wchar_t*, int, int, int, int, int);
+void DrawButton(HWND, const wchar_t*, int, int, int, int, WORD);
 void OnPaint(HWND hWnd);
 void AddShape(HWND hWnd);
 void AddStretchShape(HWND hWnd);
@@ -100,7 +100,7 @@ int WINAPI wWinMain(
 	}
 
 	Gdiplus::GdiplusShutdown(gdiplusToken);
-	return (int) msg.wParam;
+	return static_cast<int>(msg.wParam);
 
 }
 
@@ -161,7 +161,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				case BID_ELLIPSE:
 				case BID_CIRCLE:
 				case BID_TRIANGLE:
-					currentTool = wParam;
+					currentTool = static_cast<UINT>(wParam);
 					break;
 			}
 			break;
@@ -205,7 +205,7 @@ void DrawButton(
 	const wchar_t* caption, 
 	int x, int y, 
 	int width, int height, 
-	int id
+	WORD id
 )
 {
 	static int countButtons = 0;
@@ -216,7 +216,7 @@ void DrawButton(
 		x, y,
 		width, height,
 		hWnd,
-		(HMENU)id,
+		reinterpret_cast<HMENU>(id),
 		GetModuleHandle(NULL),
 		NULL
 	);
@@ -241,7 +241,7 @@ void OnPaint(HWND hWnd)
 	List* temp = new List();
 	while (!shapes->is_empty())
 	{
-		Custom::BaseShape* shape = (Custom::BaseShape*)shapes->pop();
+		Custom::BaseShape* shape = static_cast<Custom::BaseShape*>(shapes->pop());
 		shape->Redraw(&graphics);
 		temp->push(shape);
 	}
