@@ -21,28 +21,28 @@
     <ClCompile Include="Source\BaseShape.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Line.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Rectangle.cpp">
+    <ClCompile Include="Source\Circle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Ellipse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Triangle.cpp">
+    <ClCompile Include="Source\Line.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\List.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Polygon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Circle.cpp">
+    <ClCompile Include="Source\Rectangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Square.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\List.cpp">
+    <ClCompile Include="Source\Triangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -55,28 +55,28 @@
     <ClInclude Include="Include\BaseShape.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Line.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Rectangle.h">
+    <ClInclude Include="Include\Circle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Ellipse.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Triangle.h">
+    <ClInclude Include="Include\Line.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\List.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Polygon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Circle.h">
+    <ClInclude Include="Include\Rectangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Square.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\List.h">
+    <ClInclude Include="Include\Triangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
