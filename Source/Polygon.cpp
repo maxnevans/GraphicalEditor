@@ -1,4 +1,4 @@
-#include "..\Include\Polygon.h"
+#include "Polygon.h"
 
 void Custom::Polygon::SetPoints(const Gdiplus::Point* points, int count)
 {

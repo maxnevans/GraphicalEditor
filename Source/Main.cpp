@@ -5,12 +5,12 @@
 #include <string.h>
 #include <stdio.h>
 #include <gdiplus.h>
-#include "../Include/List.h"
-#include "../Include/Square.h"
-#include "../Include/Rectangle.h"
-#include "../Include/Circle.h"
-#include "../Include/Ellipse.h"
-#include "../Include/Polygon.h"
+#include "List.h"
+#include "Square.h"
+#include "Rectangle.h"
+#include "Circle.h"
+#include "Ellipse.h"
+#include "Polygon.h"
 
 #define WND_CLASS		L"MainWindow"
 #define WND_NAME		L"Graphical Editor"

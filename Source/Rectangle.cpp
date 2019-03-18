@@ -1,4 +1,4 @@
-#include "..\Include\Rectangle.h"
+#include "Rectangle.h"
 
 
 void Custom::Rectangle::Redraw(Gdiplus::Graphics* const graphics)

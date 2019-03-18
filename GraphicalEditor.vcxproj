@@ -69,7 +69,20 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -160,15 +173,15 @@
     <Manifest Include="Resource\main.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\BaseShape.h" />
-    <ClInclude Include="Include\Circle.h" />
-    <ClInclude Include="Include\Ellipse.h" />
-    <ClInclude Include="Include\Line.h" />
-    <ClInclude Include="Include\List.h" />
-    <ClInclude Include="Include\Polygon.h" />
-    <ClInclude Include="Include\Rectangle.h" />
-    <ClInclude Include="Include\Square.h" />
-    <ClInclude Include="Include\Triangle.h" />
+    <ClInclude Include="Source\BaseShape.h" />
+    <ClInclude Include="Source\Circle.h" />
+    <ClInclude Include="Source\Ellipse.h" />
+    <ClInclude Include="Source\Line.h" />
+    <ClInclude Include="Source\List.h" />
+    <ClInclude Include="Source\Polygon.h" />
+    <ClInclude Include="Source\Rectangle.h" />
+    <ClInclude Include="Source\Square.h" />
+    <ClInclude Include="Source\Triangle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

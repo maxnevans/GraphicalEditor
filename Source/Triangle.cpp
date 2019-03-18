@@ -1,4 +1,4 @@
-#include "..\Include\Triangle.h"
+#include "Triangle.h"
 
 
 

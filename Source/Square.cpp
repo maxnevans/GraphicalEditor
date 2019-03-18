@@ -1,4 +1,4 @@
-#include "..\Include\Square.h"
+#include "Square.h"
 
 void Custom::Square::Redraw(Gdiplus::Graphics * const graphics)
 {

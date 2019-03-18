@@ -1,4 +1,4 @@
-#include "..\Include\Circle.h"
+#include "Circle.h"
 
 void Custom::Circle::Redraw(Gdiplus::Graphics * const graphics)
 {

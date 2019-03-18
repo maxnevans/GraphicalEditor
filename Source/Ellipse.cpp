@@ -1,4 +1,4 @@
-#include "..\Include\Ellipse.h"
+#include "Ellipse.h"
 
 void Custom::Ellipse::Redraw(Gdiplus::Graphics* const graphics)
 {

@@ -1,4 +1,4 @@
-#include "..\Include\Line.h"
+#include "Line.h"
 
 using namespace Gdiplus;
 

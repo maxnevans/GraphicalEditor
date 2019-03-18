@@ -1,4 +1,4 @@
-#include "..\Include\BaseShape.h"
+#include "BaseShape.h"
 
 void Custom::BaseShape::SetPoints(int x1, int y1, int x2, int y2)
 {
