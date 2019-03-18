@@ -35,7 +35,7 @@
 #define B_HEIGHT		30
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-void goError(const wchar_t* description, DWORD code = ERROR_SUCCESS);
+void GoError(const wchar_t* description, DWORD code = ERROR_SUCCESS);
 void InitUI(HWND);
 void DrawButton(HWND, const wchar_t*, int, int, int, int, WORD);
 void OnPaint(HWND hWnd);
@@ -72,7 +72,7 @@ int WINAPI wWinMain(
 	wcex.lpszClassName = WND_CLASS;
 
 	DWORD retVal = RegisterClassEx(&wcex);
-	if (!retVal) goError(L"register window");
+	if (!retVal) GoError(L"register window");
 
 	RECT rDesk;
 	GetWindowRect(GetDesktopWindow(), &rDesk);
@@ -88,7 +88,7 @@ int WINAPI wWinMain(
 		hInstance,
 		0
 	);
-	if (hWnd == NULL) goError(L"create window");
+	if (hWnd == NULL) GoError(L"create window");
 	UpdateWindow(hWnd);
 
 	MSG msg = { 0 };
@@ -175,7 +175,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-void goError(const wchar_t* description, DWORD code)
+void GoError(const wchar_t* description, DWORD code)
 {
 	const int MAX_ERROR_SIZE_MESSAGE = 256;
 	assert(description != NULL);
@@ -220,7 +220,7 @@ void DrawButton(
 		GetModuleHandle(NULL),
 		NULL
 	);
-	if (!hTest) goError(L"button");
+	if (!hTest) GoError(L"button");
 	buttons[countButtons++] = hTest;
 
 }
@@ -281,7 +281,7 @@ void AddShape(HWND hWnd)
 			shape = new Custom::Triangle();
 			break;
 		default:
-			goError(L"undefined shape");
+			GoError(L"undefined shape");
 	}
 	shape->SetPoints(points[0].X, points[0].Y, points[1].X, points[1].Y);
 	shape->SetColor(Gdiplus::Color(0xFFFF0000));
@@ -311,7 +311,7 @@ void AddStretchShape(HWND hWnd)
 		stretchShape = new Custom::Triangle();
 		break;
 	default:
-		goError(L"undefined shape");
+		GoError(L"undefined shape");
 	}
 	stretchShape->SetColor(Gdiplus::Color(0xFFFF0000));
 }
