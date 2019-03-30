@@ -80,7 +80,7 @@ int WINAPI wWinMain(
 	HWND hWnd = CreateWindowW(
 		WND_CLASS,
 		WND_NAME,
-		WS_VISIBLE | WS_OVERLAPPEDWINDOW & ~WS_SIZEBOX & ~WS_MAXIMIZEBOX,
+		WS_VISIBLE | WS_OVERLAPPEDWINDOW & ~WS_SIZEBOX & ~WS_MAXIMIZEBOX | WS_CLIPCHILDREN,
 		(rDesk.right - WND_WIDTH) / 2, (rDesk.bottom - WND_HEIGHT) / 2,
 		WND_WIDTH, WND_HEIGHT,
 		NULL,
@@ -124,13 +124,13 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case WM_ERASEBKGND:
 			return TRUE;
 		case WM_LBUTTONDOWN:
-			HideTools();
+			//HideTools();
 			points[0].X = GET_X_LPARAM(lParam);
 			points[0].Y = GET_Y_LPARAM(lParam);
 			AddStretchShape(hWnd);
 			break;
 		case WM_LBUTTONUP:
-			ShowTools();
+			//ShowTools();
 			points[1].X = GET_X_LPARAM(lParam);
 			points[1].Y = GET_Y_LPARAM(lParam);
 			AddShape(hWnd);
@@ -237,6 +237,9 @@ void OnPaint(HWND hWnd)
 	HBITMAP hBmp = CreateCompatibleBitmap(hdc, WND_WIDTH, WND_HEIGHT);
 	SelectObject(hdcMem, hBmp);
 	Graphics graphics(hdcMem);
+
+	SolidBrush sb(Color::White);
+	graphics.FillRectangle(&sb, 0, 0, WND_WIDTH, WND_HEIGHT);
 
 	List* temp = new List();
 	while (!shapes->is_empty())
