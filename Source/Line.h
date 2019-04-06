@@ -6,6 +6,7 @@ namespace Custom {
 	{
 	public:
 		virtual void Redraw(Gdiplus::Graphics* const graphics);
+		virtual std::wstring SerializeText() override;
 	};
 }
 

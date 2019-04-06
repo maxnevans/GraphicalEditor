@@ -165,11 +165,14 @@
     <ClCompile Include="Source\FileManager.cpp" />
     <ClCompile Include="Source\Line.cpp" />
     <ClCompile Include="Source\List.cpp" />
+    <ClCompile Include="Source\ListShapes.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Polygon.cpp" />
     <ClCompile Include="Source\Rectangle.cpp" />
+    <ClCompile Include="Source\ShapesFactory.cpp" />
     <ClCompile Include="Source\Square.cpp" />
     <ClCompile Include="Source\Triangle.cpp" />
+    <ClCompile Include="Source\WinException.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="Resource\main.manifest" />
@@ -184,10 +187,13 @@
     <ClInclude Include="Source\ISerializable.h" />
     <ClInclude Include="Source\Line.h" />
     <ClInclude Include="Source\List.h" />
+    <ClInclude Include="Source\ListShapes.h" />
     <ClInclude Include="Source\Polygon.h" />
     <ClInclude Include="Source\Rectangle.h" />
+    <ClInclude Include="Source\ShapesFactory.h" />
     <ClInclude Include="Source\Square.h" />
     <ClInclude Include="Source\Triangle.h" />
+    <ClInclude Include="Source\WinException.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
