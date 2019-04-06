@@ -1,16 +1,12 @@
 #include <windows.h>
 #include <windowsx.h>
-#include <exception>
-#include <assert.h>
-#include <string.h>
-#include <stdio.h>
 #include <gdiplus.h>
-#include "List.h"
-#include "Square.h"
-#include "Rectangle.h"
-#include "Circle.h"
-#include "Ellipse.h"
-#include "Polygon.h"
+#include <sstream>
+#include "Exception.h"
+#include "WinException.h"
+#include "ShapesFactory.h"
+#include "ListShapes.h"
+#include "FileManager.h"
 
 #define WND_CLASS		L"MainWindow"
 #define WND_NAME		L"Graphical Editor"
@@ -23,6 +19,8 @@
 #define BID_ELLIPSE		0x0003
 #define BID_CIRCLE		0x0005
 #define BID_SQUARE		0x0006
+#define BID_SAVE		0x0007
+#define BID_LOAD		0x0008
 
 #define BC_LINE			L"Line"
 #define BC_TRIANGLE		L"Triangle"
@@ -30,22 +28,21 @@
 #define BC_ELLIPSE		L"Ellipse"
 #define BC_CIRCLE		L"Circle"
 #define BC_SQUARE		L"Square"
+#define BC_SAVE			L"Save"
+#define BC_LOAD			L"Load"
 
 #define B_WIDTH			140
 #define B_HEIGHT		30
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-void GoError(const wchar_t* description, DWORD code = ERROR_SUCCESS);
 void InitUI(HWND);
 void DrawButton(HWND, const wchar_t*, int, int, int, int, WORD);
 void OnPaint(HWND hWnd);
 void AddShape(HWND hWnd);
 void AddStretchShape(HWND hWnd);
-void HideTools();
-void ShowTools();
 
 HWND buttons[6];
-List* shapes;
+ListShapes* shapes;
 UINT currentTool;
 Gdiplus::Point points[2];
 Custom::BaseShape* stretchShape;
@@ -57,51 +54,63 @@ int WINAPI wWinMain(
 	int nShowCmd
 )
 {
-	Gdiplus::GdiplusStartupInput	gdiplusStartupInput;
-	ULONG_PTR						gdiplusToken;
-	Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
-
-	WNDCLASSEX wcex = {0};
-	wcex.cbSize = sizeof(wcex);
-	wcex.hInstance = hInstance;
-	wcex.style = CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc = WndProc;
-	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wcex.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-	wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-	wcex.lpszClassName = WND_CLASS;
-
-	DWORD retVal = RegisterClassEx(&wcex);
-	if (!retVal) GoError(L"register window");
-
-	RECT rDesk;
-	GetWindowRect(GetDesktopWindow(), &rDesk);
-	
-	HWND hWnd = CreateWindowW(
-		WND_CLASS,
-		WND_NAME,
-		WS_VISIBLE | WS_OVERLAPPEDWINDOW & ~WS_SIZEBOX & ~WS_MAXIMIZEBOX | WS_CLIPCHILDREN,
-		(rDesk.right - WND_WIDTH) / 2, (rDesk.bottom - WND_HEIGHT) / 2,
-		WND_WIDTH, WND_HEIGHT,
-		NULL,
-		NULL,
-		hInstance,
-		0
-	);
-	if (hWnd == NULL) GoError(L"create window");
-	UpdateWindow(hWnd);
-
-	MSG msg = { 0 };
-
-	while (GetMessage(&msg, NULL, 0, 0))
+	try
 	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+		Gdiplus::GdiplusStartupInput	gdiplusStartupInput;
+		ULONG_PTR						gdiplusToken;
+		Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+
+		WNDCLASSEX wcex = { 0 };
+		wcex.cbSize = sizeof(wcex);
+		wcex.hInstance = hInstance;
+		wcex.style = CS_HREDRAW | CS_VREDRAW;
+		wcex.lpfnWndProc = WndProc;
+		wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+		wcex.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+		wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+		wcex.lpszClassName = WND_CLASS;
+
+		DWORD retVal = RegisterClassEx(&wcex);
+		if (!retVal) throw WinException(L"register window");
+
+		RECT rDesk;
+		GetWindowRect(GetDesktopWindow(), &rDesk);
+
+		HWND hWnd = CreateWindowW(
+			WND_CLASS,
+			WND_NAME,
+			WS_VISIBLE | WS_OVERLAPPEDWINDOW & ~WS_SIZEBOX & ~WS_MAXIMIZEBOX | WS_CLIPCHILDREN,
+			(rDesk.right - WND_WIDTH) / 2, (rDesk.bottom - WND_HEIGHT) / 2,
+			WND_WIDTH, WND_HEIGHT,
+			NULL,
+			NULL,
+			hInstance,
+			0
+		);
+		if (hWnd == NULL) throw WinException(L"create window");
+		UpdateWindow(hWnd);
+
+		MSG msg = { 0 };
+
+		while (GetMessage(&msg, NULL, 0, 0))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+
+		Gdiplus::GdiplusShutdown(gdiplusToken);
+		return static_cast<int>(msg.wParam);
 	}
-
-	Gdiplus::GdiplusShutdown(gdiplusToken);
-	return static_cast<int>(msg.wParam);
-
+	catch (Exception error)
+	{
+		MessageBox(NULL, error.what().c_str(), L"Fatal error", MB_OK | MB_ICONERROR);
+		exit(-1);
+	}
+	catch (...)
+	{
+		MessageBox(NULL, L"Undefined error!", L"Undefined error", MB_OK | MB_ICONERROR);
+		exit(-1);
+	}
 }
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -110,7 +119,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		case WM_CREATE:
 			InitUI(hWnd);
-			shapes = new List;
+			shapes = new ListShapes;
 			currentTool = BID_LINE;
 			points[0].X = -1;
 			points[0].Y = -1;
@@ -124,13 +133,11 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case WM_ERASEBKGND:
 			return TRUE;
 		case WM_LBUTTONDOWN:
-			//HideTools();
 			points[0].X = GET_X_LPARAM(lParam);
 			points[0].Y = GET_Y_LPARAM(lParam);
 			AddStretchShape(hWnd);
 			break;
 		case WM_LBUTTONUP:
-			//ShowTools();
 			points[1].X = GET_X_LPARAM(lParam);
 			points[1].Y = GET_Y_LPARAM(lParam);
 			AddShape(hWnd);
@@ -163,6 +170,13 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				case BID_TRIANGLE:
 					currentTool = static_cast<UINT>(wParam);
 					break;
+				case BID_SAVE:
+					FileManager::SaveText(shapes, L"test.txt");
+					break;
+				case BID_LOAD:
+					FileManager::LoadText(shapes, L"test.txt");
+					InvalidateRect(hWnd, NULL, FALSE);
+					break;
 			}
 			break;
 		case WM_CLOSE:
@@ -175,21 +189,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-void GoError(const wchar_t* description, DWORD code)
-{
-	const int MAX_ERROR_SIZE_MESSAGE = 256;
-	assert(description != NULL);
-	assert(wcslen(description) < MAX_ERROR_SIZE_MESSAGE);
-
-	if (code == ERROR_SUCCESS) code = GetLastError();
-
-	wchar_t buf[MAX_ERROR_SIZE_MESSAGE];
-	swprintf_s(buf, L"Error: %s [CODE:%d]", description, code);
-
-	MessageBoxW(NULL, buf , L"Fatal Failure", MB_OK| MB_ICONERROR );
-	exit(EXIT_FAILURE);
-}
-
 void InitUI(HWND hWnd)
 {
 	DrawButton(hWnd, BC_LINE, B_WIDTH * 0, 0, B_WIDTH, B_HEIGHT, BID_LINE);
@@ -198,6 +197,8 @@ void InitUI(HWND hWnd)
 	DrawButton(hWnd, BC_TRIANGLE, B_WIDTH * 3, 0, B_WIDTH, B_HEIGHT, BID_TRIANGLE);
 	DrawButton(hWnd, BC_CIRCLE, B_WIDTH * 4, 0, B_WIDTH, B_HEIGHT, BID_CIRCLE);
 	DrawButton(hWnd, BC_SQUARE, B_WIDTH * 5, 0, B_WIDTH, B_HEIGHT, BID_SQUARE);
+	DrawButton(hWnd, BC_SAVE, B_WIDTH * 6, 0, B_WIDTH, B_HEIGHT, BID_SAVE);
+	DrawButton(hWnd, BC_LOAD, B_WIDTH * 7, 0, B_WIDTH, B_HEIGHT, BID_LOAD);
 }
 
 void DrawButton(
@@ -220,7 +221,7 @@ void DrawButton(
 		GetModuleHandle(NULL),
 		NULL
 	);
-	if (!hTest) GoError(L"button");
+	if (!hTest) throw WinException(L"button");
 	buttons[countButtons++] = hTest;
 
 }
@@ -241,12 +242,12 @@ void OnPaint(HWND hWnd)
 	SolidBrush sb(Color::White);
 	graphics.FillRectangle(&sb, 0, 0, WND_WIDTH, WND_HEIGHT);
 
-	List* temp = new List();
-	while (!shapes->is_empty())
+	ListShapes* temp = new ListShapes();
+	while (!shapes->IsEmpty())
 	{
-		Custom::BaseShape* shape = static_cast<Custom::BaseShape*>(shapes->pop());
+		Custom::BaseShape* shape = shapes->Pop();
 		shape->Redraw(&graphics);
-		temp->push(shape);
+		temp->Push(shape);
 	}
 	delete shapes;
 	shapes = temp;
@@ -266,29 +267,29 @@ void AddShape(HWND hWnd)
 	switch (currentTool)
 	{
 		case BID_LINE:
-			shape = new Custom::Line();
+			shape = ShapesFactory::CreateShape(ShapesFactory::LINE);
 			break;
 		case BID_RECTANGLE:
-			shape = new Custom::Rectangle();
+			shape = ShapesFactory::CreateShape(ShapesFactory::RECTANGLE);
 			break;
 		case BID_SQUARE:
-			shape = new Custom::Square();
+			shape = ShapesFactory::CreateShape(ShapesFactory::SQUARE);
 			break;
 		case BID_ELLIPSE:
-			shape = new Custom::Ellipse();
+			shape = ShapesFactory::CreateShape(ShapesFactory::ELLIPSE);
 			break;
 		case BID_CIRCLE:
-			shape = new Custom::Circle();
+			shape = ShapesFactory::CreateShape(ShapesFactory::CIRCLE);
 			break;
 		case BID_TRIANGLE:
-			shape = new Custom::Triangle();
+			shape = ShapesFactory::CreateShape(ShapesFactory::TRIANGLE);
 			break;
 		default:
-			GoError(L"undefined shape");
+			throw DebugException(L"undefined shape");
 	}
 	shape->SetPoints(points[0].X, points[0].Y, points[1].X, points[1].Y);
 	shape->SetColor(Gdiplus::Color(0xFFFF0000));
-	shapes->push(shape);
+	shapes->Push(shape);
 }
 
 void AddStretchShape(HWND hWnd)
@@ -296,41 +297,25 @@ void AddStretchShape(HWND hWnd)
 	switch (currentTool)
 	{
 	case BID_LINE:
-		stretchShape = new Custom::Line();
+		stretchShape = ShapesFactory::CreateShape(ShapesFactory::LINE);
 		break;
 	case BID_RECTANGLE:
-		stretchShape = new Custom::Rectangle();
+		stretchShape = ShapesFactory::CreateShape(ShapesFactory::RECTANGLE);
 		break;
 	case BID_SQUARE:
-		stretchShape = new Custom::Square();
+		stretchShape = ShapesFactory::CreateShape(ShapesFactory::SQUARE);
 		break;
 	case BID_ELLIPSE:
-		stretchShape = new Custom::Ellipse();
+		stretchShape = ShapesFactory::CreateShape(ShapesFactory::ELLIPSE);
 		break;
 	case BID_CIRCLE:
-		stretchShape = new Custom::Circle();
+		stretchShape = ShapesFactory::CreateShape(ShapesFactory::CIRCLE);
 		break;
 	case BID_TRIANGLE:
-		stretchShape = new Custom::Triangle();
+		stretchShape = ShapesFactory::CreateShape(ShapesFactory::TRIANGLE);
 		break;
 	default:
-		GoError(L"undefined shape");
+		throw DebugException(L"undefined shape");
 	}
 	stretchShape->SetColor(Gdiplus::Color(0xFFFF0000));
-}
-
-void HideTools()
-{
-	for (int i = 0; i < 6; i++)
-	{
-		ShowWindow(buttons[i], SW_HIDE);
-	}
-}
-
-void ShowTools()
-{
-	for (int i = 0; i < 6; i++)
-	{
-		ShowWindow(buttons[i], SW_SHOW);
-	}
 }
