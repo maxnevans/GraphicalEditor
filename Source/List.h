@@ -9,9 +9,9 @@ private:
 	};
 public:
 	List();
-	void push(void* buffer);
-	void* pop();
-	bool is_empty();
+	void Push(void* buffer);
+	void* Pop();
+	bool IsEmpty();
 	~List();
 
 private:
