@@ -8,7 +8,7 @@ List::List()
 	this->header = nullptr;
 }
 
-void List::push(void* buffer)
+void List::Push(void* buffer)
 {
 	Node* node = new Node;
 	node->next = nullptr;
@@ -26,7 +26,7 @@ void List::push(void* buffer)
 	}
 }
 
-void* List::pop()
+void* List::Pop()
 {
 	if (this->header)
 	{
@@ -43,7 +43,7 @@ void* List::pop()
 
 }
 
-bool List::is_empty()
+bool List::IsEmpty()
 {
 	return this->header == nullptr;
 }
@@ -51,8 +51,8 @@ bool List::is_empty()
 
 List::~List()
 {
-	while (!this->is_empty())
+	while (!this->IsEmpty())
 	{
-		this->pop();
+		this->Pop();
 	}
 }
