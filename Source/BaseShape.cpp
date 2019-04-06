@@ -3,6 +3,12 @@
 #include <sstream>
 #include <string>
 
+Custom::BaseShape::BaseShape(const wchar_t* name)
+	:
+	name(name)
+{
+}
+
 void Custom::BaseShape::SetPoints(int x1, int y1, int x2, int y2)
 {
 	this->x = x1 < x2 ? x1 : x2;
@@ -23,6 +29,7 @@ void Custom::BaseShape::SetColor(Gdiplus::Color color)
 std::wstring Custom::BaseShape::SerializeText()
 {
 	std::wstringstream ss;
+	ss << this->name << " ";
 	ss << "Coordinates: (" << this->x1 << ", " << this->y1 << ") (" << this->x2 << ", " << this->y2 << ") Color: " << this->color.GetValue();
 	return ss.str();
 }
