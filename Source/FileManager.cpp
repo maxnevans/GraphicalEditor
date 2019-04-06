@@ -29,12 +29,15 @@ void FileManager::LoadText(IDeserializable * object, std::wstring filename)
 		throw Exception(ss.str());
 	}
 
-	std::wstring buffer;
+	std::wstringstream buffer;
 	for (wchar_t c = file.get(); file.good(); c = file.get())
 	{
-		buffer.push_back(c);
+		buffer << c;
 	}
 
-	object->DeserializeText(buffer);
+	std::wstring objectText;
+	std::getline(buffer, objectText);
+
+	object->DeserializeText(objectText);
 
 }
