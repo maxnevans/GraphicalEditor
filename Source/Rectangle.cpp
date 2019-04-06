@@ -1,5 +1,17 @@
 #include "Rectangle.h"
+#include "ShapesFactory.h"
 
+Custom::Rectangle::Rectangle()
+	:
+	Line(ShapesFactory::RECTANGLE)
+{
+}
+
+Custom::Rectangle::Rectangle(const wchar_t* name)
+	:
+	Line(name)
+{
+}
 
 void Custom::Rectangle::Redraw(Gdiplus::Graphics* const graphics)
 {

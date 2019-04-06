@@ -1,4 +1,17 @@
 #include "Square.h"
+#include "ShapesFactory.h"
+
+Custom::Square::Square()
+	:
+	Rectangle(ShapesFactory::SQUARE)
+{
+}
+
+Custom::Square::Square(const wchar_t* name)
+	:
+	Rectangle(name)
+{
+}
 
 void Custom::Square::Redraw(Gdiplus::Graphics * const graphics)
 {
