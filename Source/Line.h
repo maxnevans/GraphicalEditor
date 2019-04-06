@@ -5,8 +5,9 @@ namespace Custom {
 		public BaseShape
 	{
 	public:
+		Line();
+		Line(const wchar_t* name);
 		virtual void Redraw(Gdiplus::Graphics* const graphics);
-		virtual std::wstring SerializeText() override;
 	};
 }
 

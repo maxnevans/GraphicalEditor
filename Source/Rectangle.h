@@ -6,6 +6,8 @@ namespace Custom {
 		public Line
 	{
 	public:
+		Rectangle();
+		Rectangle(const wchar_t* name);
 		virtual void Redraw(Gdiplus::Graphics* const graphics);
 	};
 }

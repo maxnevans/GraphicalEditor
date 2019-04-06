@@ -1,4 +1,17 @@
 #include "Circle.h"
+#include "ShapesFactory.h"
+
+Custom::Circle::Circle()
+	:
+	Ellipse(ShapesFactory::CIRCLE)
+{
+}
+
+Custom::Circle::Circle(const wchar_t* name)
+	:
+	Ellipse(name)
+{
+}
 
 void Custom::Circle::Redraw(Gdiplus::Graphics * const graphics)
 {

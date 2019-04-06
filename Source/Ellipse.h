@@ -1,10 +1,13 @@
 #pragma once
-#include "Rectangle.h"
+#include "BaseShape.h"
+
 namespace Custom {
 	class Ellipse :
-		public Rectangle
+		public BaseShape
 	{
 	public:
+		Ellipse();
+		Ellipse(const wchar_t* name);
 		virtual void Redraw(Gdiplus::Graphics* const graphics);
 	};
 }

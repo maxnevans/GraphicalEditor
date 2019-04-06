@@ -1,4 +1,17 @@
 #include "Ellipse.h"
+#include "ShapesFactory.h"
+
+Custom::Ellipse::Ellipse()
+	:
+	BaseShape(ShapesFactory::ELLIPSE)
+{
+}
+
+Custom::Ellipse::Ellipse(const wchar_t* name)
+	:
+	BaseShape(name)
+{
+}
 
 void Custom::Ellipse::Redraw(Gdiplus::Graphics* const graphics)
 {

@@ -1,6 +1,17 @@
 #include "Triangle.h"
+#include "ShapesFactory.h"
 
+Custom::Triangle::Triangle()
+	:
+	Line(ShapesFactory::TRIANGLE)
+{
+}
 
+Custom::Triangle::Triangle(const wchar_t* name)
+	:
+	Line(name)
+{
+}
 
 void Custom::Triangle::Redraw(Gdiplus::Graphics* const graphics)
 {
