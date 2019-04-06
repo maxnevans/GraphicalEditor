@@ -1,7 +1,9 @@
 #pragma once
+#include <string>
+
 class ISerializable
 {
 public:
-	virtual const wchar_t* SerializeText() = 0;
+	virtual std::wstring SerializeText() = 0;
 };
 

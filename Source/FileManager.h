@@ -5,7 +5,7 @@
 class FileManager
 {
 public:
-	static void SaveText(ISerializable* object, const wchar_t* filename);
-	static void LoadText(IDeserializable* object, const wchar_t* filename);
+	static void SaveText(ISerializable* object, std::wstring filename);
+	static void LoadText(IDeserializable* object, std::wstring filename);
 };
 

@@ -1,7 +1,9 @@
 #pragma once
+#include <string>
+
 class IDeserializable
 {
 public:
-	virtual void DeserializeText(const wchar_t* text) = 0;
+	virtual void DeserializeText(std::wstring text) = 0;
 };
 

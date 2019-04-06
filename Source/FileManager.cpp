@@ -1,39 +1,40 @@
 #include "FileManager.h"
-#include <stdio.h>
-#include <exception>
+#include "Exception.h"
+#include <fstream>
+#include <sstream>
 
-void FileManager::SaveText(ISerializable * object, const wchar_t* filename)
+void FileManager::SaveText(ISerializable * object, std::wstring filename)
 {
-	FILE* file;
-	int error = _wfopen_s(&file, filename, L"w");
-	if (error) throw std::exception("file open failed");
-	fputws(object->SerializeText(), file);
-	fclose(file);
+	std::wofstream file(filename);
+
+	if (!file.is_open())
+	{
+		std::wstringstream ss;
+		ss << L"Failed to open file [" << filename << L"]";
+		throw Exception(ss.str());
+	}
+
+	file << object->SerializeText();
+	file.flush();
 }
 
-void FileManager::LoadText(IDeserializable * object, const wchar_t* filename)
+void FileManager::LoadText(IDeserializable * object, std::wstring filename)
 {
-	FILE* file;
-	int error = _wfopen_s(&file, filename, L"r");
-	if (error) throw std::exception("file does not exists or any other fail occured");
+	std::wifstream file(filename);
 
-	fseek(file, 0, SEEK_END);
-	long fileSize = ftell(file);
-	rewind(file);
-
-	wchar_t* buffer = (wchar_t*)malloc(fileSize);
-	if (!buffer) throw std::exception("malloc fail");
-	try
+	if (!file.is_open())
 	{
-		fgetws(buffer, fileSize / 2, file);
-		fclose(file);
-		object->DeserializeText(buffer);
-	}
-	catch (...)
-	{
-		free(buffer);
-		throw;
+		std::wstringstream ss;
+		ss << L"Failed to open file [" << filename << L"]";
+		throw Exception(ss.str());
 	}
 
-	free(buffer);
+	std::wstring buffer;
+	for (wchar_t c = file.get(); file.good(); c = file.get())
+	{
+		buffer.push_back(c);
+	}
+
+	object->DeserializeText(buffer);
+
 }
