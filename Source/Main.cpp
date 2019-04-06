@@ -149,7 +149,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				points[1].X = GET_X_LPARAM(lParam);
 				points[1].Y = GET_Y_LPARAM(lParam);
 				stretchShape->SetPoints(points[0].X, points[0].Y, points[1].X, points[1].Y);
-				InvalidateRect(hWnd, NULL, TRUE);
+				InvalidateRect(hWnd, NULL, FALSE);
 			}
 			break;
 		case WM_COMMAND:
