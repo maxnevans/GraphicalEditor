@@ -1,9 +1,10 @@
 #include "FileManager.h"
 #include "Exception.h"
+#include "ShapesFactory.h"
 #include <fstream>
 #include <sstream>
 
-void FileManager::SaveText(ISerializable * object, std::wstring filename)
+void FileManager::SaveText(ListShapes* shapes, std::wstring filename)
 {
 	std::wofstream file(filename);
 
@@ -14,11 +15,16 @@ void FileManager::SaveText(ISerializable * object, std::wstring filename)
 		throw Exception(ss.str());
 	}
 
-	file << object->SerializeText();
-	file.flush();
+	while (!shapes->IsEmpty())
+	{
+		Custom::BaseShape* shape = shapes->Pop();
+		file << shape->SerializeText() << std::endl;
+	}
+
+	file.close();
 }
 
-void FileManager::LoadText(IDeserializable * object, std::wstring filename)
+void FileManager::LoadText(ListShapes* shapes, std::wstring filename)
 {
 	std::wifstream file(filename);
 
@@ -35,9 +41,21 @@ void FileManager::LoadText(IDeserializable * object, std::wstring filename)
 		buffer << c;
 	}
 
-	std::wstring objectText;
-	std::getline(buffer, objectText);
+	std::wstring shapeText;
+	std::getline(buffer, shapeText);
+	while (buffer.good())
+	{
 
-	object->DeserializeText(objectText);
+		size_t shapeTextStart = shapeText.find(L"Coordinates:");
+		size_t endOfShapeName = shapeTextStart - 1;
+		std::wstring shapeName = shapeText.substr(0, endOfShapeName);
+
+		Custom::BaseShape* shape = ShapesFactory::CreateShape(shapeName);
+		shape->DeserializeText(shapeText.substr(shapeTextStart));
+
+		shapes->Push(shape);
+
+		std::getline(buffer, shapeText);
+	}
 
 }
