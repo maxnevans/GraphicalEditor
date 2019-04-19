@@ -21,6 +21,7 @@
 #define BID_SQUARE		0x0006
 #define BID_SAVE		0x0007
 #define BID_LOAD		0x0008
+#define BID_DELETE		0x0009
 
 #define BC_LINE			L"Line"
 #define BC_TRIANGLE		L"Triangle"
@@ -30,6 +31,7 @@
 #define BC_SQUARE		L"Square"
 #define BC_SAVE			L"Save"
 #define BC_LOAD			L"Load"
+#define BC_DELETE		L"Delete"
 
 #define B_WIDTH			140
 #define B_HEIGHT		30
@@ -200,6 +202,7 @@ void InitUI(HWND hWnd)
 	DrawButton(hWnd, BC_SQUARE, B_WIDTH * 5, 0, B_WIDTH, B_HEIGHT, BID_SQUARE);
 	DrawButton(hWnd, BC_SAVE, B_WIDTH * 6, 0, B_WIDTH, B_HEIGHT, BID_SAVE);
 	DrawButton(hWnd, BC_LOAD, B_WIDTH * 7, 0, B_WIDTH, B_HEIGHT, BID_LOAD);
+	DrawButton(hWnd, BC_DELETE, B_WIDTH * 8, 0, B_WIDTH, B_HEIGHT, BID_DELETE);
 
 	DrawInput(hWnd, B_WIDTH * 0, B_HEIGHT, B_WIDTH, B_HEIGHT, 0x0001);
 	DrawInput(hWnd, B_WIDTH * 1, B_HEIGHT, B_WIDTH, B_HEIGHT, 0x0001);
