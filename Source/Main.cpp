@@ -174,6 +174,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					FileManager::SaveText(shapes, L"test.txt");
 					break;
 				case BID_LOAD:
+					while (!shapes->IsEmpty()) shapes->Pop();
 					FileManager::LoadText(shapes, L"test.txt");
 					InvalidateRect(hWnd, NULL, FALSE);
 					break;
