@@ -37,11 +37,11 @@
 LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void InitUI(HWND);
 void DrawButton(HWND, const wchar_t*, int, int, int, int, WORD);
+void DrawInput(HWND, int, int, int, int, WORD);
 void OnPaint(HWND hWnd);
 void AddShape(HWND hWnd);
 void AddStretchShape(HWND hWnd);
 
-HWND buttons[6];
 ListShapes* shapes;
 UINT currentTool;
 Gdiplus::Point points[2];
@@ -200,6 +200,12 @@ void InitUI(HWND hWnd)
 	DrawButton(hWnd, BC_SQUARE, B_WIDTH * 5, 0, B_WIDTH, B_HEIGHT, BID_SQUARE);
 	DrawButton(hWnd, BC_SAVE, B_WIDTH * 6, 0, B_WIDTH, B_HEIGHT, BID_SAVE);
 	DrawButton(hWnd, BC_LOAD, B_WIDTH * 7, 0, B_WIDTH, B_HEIGHT, BID_LOAD);
+
+	DrawInput(hWnd, B_WIDTH * 0, B_HEIGHT, B_WIDTH, B_HEIGHT, 0x0001);
+	DrawInput(hWnd, B_WIDTH * 1, B_HEIGHT, B_WIDTH, B_HEIGHT, 0x0001);
+	DrawInput(hWnd, B_WIDTH * 2, B_HEIGHT, B_WIDTH, B_HEIGHT, 0x0001);
+	DrawInput(hWnd, B_WIDTH * 3, B_HEIGHT, B_WIDTH, B_HEIGHT, 0x0001);
+
 }
 
 void DrawButton(
@@ -210,7 +216,6 @@ void DrawButton(
 	WORD id
 )
 {
-	static int countButtons = 0;
 	HWND hTest = CreateWindow(
 		L"Button",
 		caption,
@@ -223,8 +228,23 @@ void DrawButton(
 		NULL
 	);
 	if (!hTest) throw WinException(L"button");
-	buttons[countButtons++] = hTest;
+}
 
+void DrawInput(HWND hParent, int x, int y, int width, int height, WORD id)
+{
+	HWND hInput = CreateWindow
+	(
+		L"Edit",
+		NULL, 
+		WS_CHILD | WS_VISIBLE,
+		x, y, 
+		width, height,
+		hParent,
+		reinterpret_cast<HMENU>(id),
+		GetModuleHandle(NULL),
+		NULL
+	);
+	if (!hInput) throw WinException(L"input");
 }
 
 void OnPaint(HWND hWnd)
