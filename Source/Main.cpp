@@ -178,14 +178,17 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				case BID_CIRCLE:
 				case BID_TRIANGLE:
 					currentTool = static_cast<UINT>(wParam);
+					SetFocus(hWnd);
 					break;
 				case BID_SAVE:
 					FileManager::SaveText(shapes, L"test.txt");
+					SetFocus(hWnd);
 					break;
 				case BID_LOAD:
 					while (!shapes->IsEmpty()) shapes->Pop();
 					FileManager::LoadText(shapes, L"test.txt");
 					InvalidateRect(hWnd, NULL, FALSE);
+					SetFocus(hWnd);
 					break;
 				case BID_DELETE:
 					if (selectedShape)
@@ -198,17 +201,32 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						SetWindowText(hInputHeight, NULL);
 						InvalidateRect(hWnd, NULL, FALSE);
 					}
+					SetFocus(hWnd);
 					break;
 				case BID_EDIT:
-					int x1 = 0;
-					int x2 = 0;
-					int y1 = 0;
-					int y2 = 0;
+					wchar_t buffer[256];
+
+					GetWindowText(hInputX, buffer, 256);
+					int x = std::stoi(buffer);
+					
+					GetWindowText(hInputWidth, buffer, 256);
+					int width = std::stoi(buffer);
+
+					GetWindowText(hInputY, buffer, 256);
+					int y = std::stoi(buffer);
+
+					GetWindowText(hInputHeight, buffer, 256);
+					int height = std::stoi(buffer);
+
+					int x1 = x;
+					int y1 = y;
+					int x2 = x + width;
+					int y2 = y + height;
 					selectedShape->SetPoints(x1, y1, x2, y2);
 					InvalidateRect(hWnd, NULL, FALSE);
+					SetFocus(hWnd);
 					break;
 			}
-			SetFocus(hWnd);
 			break;
 		case WM_KEYDOWN:
 			if (wParam == VK_TAB)
