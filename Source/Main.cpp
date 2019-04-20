@@ -22,6 +22,7 @@
 #define BID_SAVE		0x0007
 #define BID_LOAD		0x0008
 #define BID_DELETE		0x0009
+#define BID_EDIT		0x000A
 
 #define BC_LINE			L"Line"
 #define BC_TRIANGLE		L"Triangle"
@@ -32,6 +33,7 @@
 #define BC_SAVE			L"Save"
 #define BC_LOAD			L"Load"
 #define BC_DELETE		L"Delete"
+#define BC_EDIT			L"Edit"
 
 #define B_WIDTH			140
 #define B_HEIGHT		30
@@ -39,7 +41,7 @@
 LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void InitUI(HWND);
 void DrawButton(HWND, const wchar_t*, int, int, int, int, WORD);
-void DrawInput(HWND, int, int, int, int, WORD);
+HWND DrawInput(HWND, int, int, int, int, WORD);
 void OnPaint(HWND hWnd);
 void AddShape(HWND hWnd);
 void AddStretchShape(HWND hWnd);
@@ -48,6 +50,8 @@ ListShapes* shapes;
 UINT currentTool;
 Gdiplus::Point points[2];
 Custom::BaseShape* stretchShape;
+Custom::BaseShape* selectedShape;
+HWND hInputX, hInputY, hInputWidth, hInputHeight;
 
 int WINAPI wWinMain(
 	HINSTANCE hInstance,
@@ -115,6 +119,8 @@ int WINAPI wWinMain(
 	}
 }
 
+int tab_pressed = 0;
+
 LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
@@ -128,6 +134,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			points[1].X = -1;
 			points[1].Y = -1;
 			stretchShape = nullptr;
+			selectedShape = nullptr;
 			break;
 		case WM_PAINT:
 			OnPaint(hWnd);
@@ -180,6 +187,67 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					FileManager::LoadText(shapes, L"test.txt");
 					InvalidateRect(hWnd, NULL, FALSE);
 					break;
+				case BID_DELETE:
+					if (selectedShape)
+					{
+						delete selectedShape;
+						selectedShape = nullptr;
+						SetWindowText(hInputX, NULL);
+						SetWindowText(hInputY, NULL);
+						SetWindowText(hInputWidth, NULL);
+						SetWindowText(hInputHeight, NULL);
+						InvalidateRect(hWnd, NULL, FALSE);
+					}
+					break;
+				case BID_EDIT:
+					int x1 = 0;
+					int x2 = 0;
+					int y1 = 0;
+					int y2 = 0;
+					selectedShape->SetPoints(x1, y1, x2, y2);
+					InvalidateRect(hWnd, NULL, FALSE);
+					break;
+			}
+			SetFocus(hWnd);
+			break;
+		case WM_KEYDOWN:
+			if (wParam == VK_TAB)
+			{
+				if (!shapes->IsEmpty())
+				{
+					if (selectedShape)
+					{
+						selectedShape->SetColor(Gdiplus::Color::Red);
+						shapes->Push(selectedShape);
+					}
+					selectedShape = shapes->Pop();
+					selectedShape->SetColor(Gdiplus::Color::Green);
+					InvalidateRect(hWnd, NULL, FALSE);
+
+					wchar_t buffer[256];
+					wsprintf(buffer, L"%d", selectedShape->GetX());
+					SetWindowText(hInputX, buffer);
+					wsprintf(buffer, L"%d", selectedShape->GetY());
+					SetWindowText(hInputY, buffer);
+					wsprintf(buffer, L"%d", selectedShape->GetWidth());
+					SetWindowText(hInputWidth, buffer);
+					wsprintf(buffer, L"%d", selectedShape->GetHeight());
+					SetWindowText(hInputHeight, buffer);
+				}
+			}
+			else if (wParam == VK_ESCAPE) 
+			{
+				if (selectedShape)
+				{
+					selectedShape->SetColor(Gdiplus::Color::Red);
+					shapes->Push(selectedShape);
+					InvalidateRect(hWnd, NULL, FALSE);
+					selectedShape = nullptr;
+					SetWindowText(hInputX, NULL);
+					SetWindowText(hInputY, NULL);
+					SetWindowText(hInputWidth, NULL);
+					SetWindowText(hInputHeight, NULL);
+				}
 			}
 			break;
 		case WM_CLOSE:
@@ -203,12 +271,12 @@ void InitUI(HWND hWnd)
 	DrawButton(hWnd, BC_SAVE, B_WIDTH * 6, 0, B_WIDTH, B_HEIGHT, BID_SAVE);
 	DrawButton(hWnd, BC_LOAD, B_WIDTH * 7, 0, B_WIDTH, B_HEIGHT, BID_LOAD);
 	DrawButton(hWnd, BC_DELETE, B_WIDTH * 8, 0, B_WIDTH, B_HEIGHT, BID_DELETE);
+	DrawButton(hWnd, BC_EDIT, B_WIDTH * 4, B_HEIGHT, B_WIDTH, B_HEIGHT, BID_EDIT);
 
-	DrawInput(hWnd, B_WIDTH * 0, B_HEIGHT, B_WIDTH, B_HEIGHT, 0x0001);
-	DrawInput(hWnd, B_WIDTH * 1, B_HEIGHT, B_WIDTH, B_HEIGHT, 0x0001);
-	DrawInput(hWnd, B_WIDTH * 2, B_HEIGHT, B_WIDTH, B_HEIGHT, 0x0001);
-	DrawInput(hWnd, B_WIDTH * 3, B_HEIGHT, B_WIDTH, B_HEIGHT, 0x0001);
-
+	hInputX = DrawInput(hWnd, B_WIDTH * 0, B_HEIGHT, B_WIDTH, B_HEIGHT, NULL);
+	hInputY = DrawInput(hWnd, B_WIDTH * 1, B_HEIGHT, B_WIDTH, B_HEIGHT, NULL);
+	hInputWidth = DrawInput(hWnd, B_WIDTH * 2, B_HEIGHT, B_WIDTH, B_HEIGHT, NULL);
+	hInputHeight = DrawInput(hWnd, B_WIDTH * 3, B_HEIGHT, B_WIDTH, B_HEIGHT, NULL);
 }
 
 void DrawButton(
@@ -233,7 +301,7 @@ void DrawButton(
 	if (!hTest) throw WinException(L"button");
 }
 
-void DrawInput(HWND hParent, int x, int y, int width, int height, WORD id)
+HWND DrawInput(HWND hParent, int x, int y, int width, int height, WORD id)
 {
 	HWND hInput = CreateWindow
 	(
@@ -248,6 +316,13 @@ void DrawInput(HWND hParent, int x, int y, int width, int height, WORD id)
 		NULL
 	);
 	if (!hInput) throw WinException(L"input");
+
+	LONG styles = GetWindowLong(hInput, GWL_STYLE);
+	SetWindowLong(hInput, GWL_STYLE, styles | ES_NUMBER);
+
+	SendMessage(hInput, EM_SETLIMITTEXT, 4, 0);
+
+	return hInput;
 }
 
 void OnPaint(HWND hWnd)
@@ -278,6 +353,8 @@ void OnPaint(HWND hWnd)
 
 	if (stretchShape)
 		stretchShape->Redraw(&graphics);
+	if (selectedShape)
+		selectedShape->Redraw(&graphics);
 
 	BitBlt(hdc, 0, 0, WND_WIDTH, WND_HEIGHT, hdcMem, 0, 0, SRCCOPY);
 	DeleteDC(hdcMem);
