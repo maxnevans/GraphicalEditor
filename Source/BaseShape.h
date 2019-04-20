@@ -18,6 +18,11 @@ namespace Custom {
 		virtual void SelectPoint(int x, int y) override;
 		virtual void SelectArea(int x1, int y1, int x2, int y2) override;
 		virtual void SetPoints(int x1, int y1, int x2, int y2);
+		virtual int GetX();
+		virtual int GetY();
+		virtual int GetWidth();
+		virtual int GetHeight();
+		virtual Gdiplus::Color GetColor();
 		void SetColor(Gdiplus::Color color);
 		virtual std::wstring SerializeText() override;
 		virtual void DeserializeText(std::wstring text) override;

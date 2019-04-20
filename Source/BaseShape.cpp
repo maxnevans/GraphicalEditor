@@ -23,6 +23,31 @@ void Custom::BaseShape::SetPoints(int x1, int y1, int x2, int y2)
 	this->SetPointsSafe(x1, y1, x2, y2);
 }
 
+int Custom::BaseShape::GetX()
+{
+	return this->x;
+}
+
+int Custom::BaseShape::GetY()
+{
+	return this->y;
+}
+
+int Custom::BaseShape::GetWidth()
+{
+	return this->width;
+}
+
+int Custom::BaseShape::GetHeight()
+{
+	return this->height;
+}
+
+Gdiplus::Color Custom::BaseShape::GetColor()
+{
+	return this->color;
+}
+
 void Custom::BaseShape::SetColor(Gdiplus::Color color)
 {
 	this->color = color;
