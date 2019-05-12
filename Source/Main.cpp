@@ -45,6 +45,8 @@ HWND DrawInput(HWND, int, int, int, int, WORD);
 void OnPaint(HWND hWnd);
 void AddShape(HWND hWnd);
 void AddStretchShape(HWND hWnd);
+void SelectNextShape(HWND hWnd);
+void DeselectShape(HWND hWnd);
 
 ListShapes* shapes;
 UINT currentTool;
@@ -54,10 +56,10 @@ Custom::BaseShape* selectedShape;
 HWND hInputX, hInputY, hInputWidth, hInputHeight;
 
 int WINAPI wWinMain(
-	HINSTANCE hInstance,
-	HINSTANCE hPrevInstance,
-	LPWSTR lpCmdLine,
-	int nShowCmd
+	_In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPWSTR lpCmdLine,
+	_In_ int nShowCmd
 )
 {
 	try
@@ -181,10 +183,12 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					SetFocus(hWnd);
 					break;
 				case BID_SAVE:
+					DeselectShape(hWnd);
 					FileManager::SaveText(shapes, L"test.txt");
 					SetFocus(hWnd);
 					break;
 				case BID_LOAD:
+					DeselectShape(hWnd);
 					while (!shapes->IsEmpty()) shapes->Pop();
 					FileManager::LoadText(shapes, L"test.txt");
 					InvalidateRect(hWnd, NULL, FALSE);
@@ -194,12 +198,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					if (selectedShape)
 					{
 						delete selectedShape;
-						selectedShape = nullptr;
-						SetWindowText(hInputX, NULL);
-						SetWindowText(hInputY, NULL);
-						SetWindowText(hInputWidth, NULL);
-						SetWindowText(hInputHeight, NULL);
-						InvalidateRect(hWnd, NULL, FALSE);
+						DeselectShape(hWnd);
 					}
 					SetFocus(hWnd);
 					break;
@@ -231,41 +230,11 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case WM_KEYDOWN:
 			if (wParam == VK_TAB)
 			{
-				if (!shapes->IsEmpty())
-				{
-					if (selectedShape)
-					{
-						selectedShape->SetColor(Gdiplus::Color::Red);
-						shapes->Push(selectedShape);
-					}
-					selectedShape = shapes->Pop();
-					selectedShape->SetColor(Gdiplus::Color::Green);
-					InvalidateRect(hWnd, NULL, FALSE);
-
-					wchar_t buffer[256];
-					wsprintf(buffer, L"%d", selectedShape->GetX());
-					SetWindowText(hInputX, buffer);
-					wsprintf(buffer, L"%d", selectedShape->GetY());
-					SetWindowText(hInputY, buffer);
-					wsprintf(buffer, L"%d", selectedShape->GetWidth());
-					SetWindowText(hInputWidth, buffer);
-					wsprintf(buffer, L"%d", selectedShape->GetHeight());
-					SetWindowText(hInputHeight, buffer);
-				}
+				SelectNextShape(hWnd);
 			}
 			else if (wParam == VK_ESCAPE) 
 			{
-				if (selectedShape)
-				{
-					selectedShape->SetColor(Gdiplus::Color::Red);
-					shapes->Push(selectedShape);
-					InvalidateRect(hWnd, NULL, FALSE);
-					selectedShape = nullptr;
-					SetWindowText(hInputX, NULL);
-					SetWindowText(hInputY, NULL);
-					SetWindowText(hInputWidth, NULL);
-					SetWindowText(hInputHeight, NULL);
-				}
+				DeselectShape(hWnd);
 			}
 			break;
 		case WM_CLOSE:
@@ -340,6 +309,8 @@ HWND DrawInput(HWND hParent, int x, int y, int width, int height, WORD id)
 
 	SendMessage(hInput, EM_SETLIMITTEXT, 4, 0);
 
+	EnableWindow(hInput, FALSE);
+
 	return hInput;
 }
 
@@ -356,7 +327,7 @@ void OnPaint(HWND hWnd)
 	SelectObject(hdcMem, hBmp);
 	Graphics graphics(hdcMem);
 
-	SolidBrush sb(Color::White);
+	SolidBrush sb(Color::LightGray);
 	graphics.FillRectangle(&sb, 0, 0, WND_WIDTH, WND_HEIGHT);
 
 	ListShapes* temp = new ListShapes();
@@ -437,4 +408,54 @@ void AddStretchShape(HWND hWnd)
 		throw DebugException(L"undefined shape");
 	}
 	stretchShape->SetColor(Gdiplus::Color(0xFFFF0000));
+}
+
+void SelectNextShape(HWND hWnd)
+{
+	if (!shapes->IsEmpty())
+	{
+		if (selectedShape)
+		{
+			selectedShape->SetColor(Gdiplus::Color::Red);
+			shapes->Push(selectedShape);
+		}
+		selectedShape = shapes->Pop();
+		selectedShape->SetColor(Gdiplus::Color::Green);
+		InvalidateRect(hWnd, NULL, FALSE);
+
+		wchar_t buffer[256];
+		wsprintf(buffer, L"%d", selectedShape->GetX());
+		SetWindowText(hInputX, buffer);
+		wsprintf(buffer, L"%d", selectedShape->GetY());
+		SetWindowText(hInputY, buffer);
+		wsprintf(buffer, L"%d", selectedShape->GetWidth());
+		SetWindowText(hInputWidth, buffer);
+		wsprintf(buffer, L"%d", selectedShape->GetHeight());
+		SetWindowText(hInputHeight, buffer);
+
+		EnableWindow(hInputX, TRUE);
+		EnableWindow(hInputY, TRUE);
+		EnableWindow(hInputWidth, TRUE);
+		EnableWindow(hInputHeight, TRUE);
+	}
+}
+
+void DeselectShape(HWND hWnd)
+{
+	if (selectedShape)
+	{
+		selectedShape->SetColor(Gdiplus::Color::Red);
+		shapes->Push(selectedShape);
+		InvalidateRect(hWnd, NULL, FALSE);
+		selectedShape = nullptr;
+		SetWindowText(hInputX, NULL);
+		SetWindowText(hInputY, NULL);
+		SetWindowText(hInputWidth, NULL);
+		SetWindowText(hInputHeight, NULL);
+
+		EnableWindow(hInputX, FALSE);
+		EnableWindow(hInputY, FALSE);
+		EnableWindow(hInputWidth, FALSE);
+		EnableWindow(hInputHeight, FALSE);
+	}
 }
