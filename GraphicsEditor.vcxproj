@@ -31,6 +31,7 @@
     <ClInclude Include="source\ShapesFactory.h" />
     <ClInclude Include="source\shapes\BaseShape.h" />
     <ClInclude Include="source\shapes\Circle.h" />
+    <ClInclude Include="source\shapes\DefaultShapes.h" />
     <ClInclude Include="source\shapes\Ellipse.h" />
     <ClInclude Include="source\shapes\Line.h" />
     <ClInclude Include="source\shapes\Polygon.h" />
