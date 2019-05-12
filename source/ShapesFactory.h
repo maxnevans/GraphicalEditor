@@ -7,11 +7,17 @@ typedef unsigned int ShapeID;
 
 class ShapesFactory
 {
+private:
+	typedef struct _RegEntry {
+		ShapeFactoryMethod fm;
+		std::wstring name;
+	} RegEntry;
 public:
 	Custom::BaseShape* CreateShape(ShapeID shapeId) const;
-	ShapeID RegisterShape(ShapeFactoryMethod factoryMethod);
+	Custom::BaseShape* CreateShape(std::wstring name) const;
+	ShapeID RegisterShape(const std::wstring name, ShapeFactoryMethod factoryMethod);
 
 private:
-	std::vector<ShapeFactoryMethod> regList;
+	std::vector<RegEntry> regList;
 };
 
