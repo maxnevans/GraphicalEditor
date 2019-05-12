@@ -22,7 +22,7 @@ Custom::BaseShape* ShapesFactory::CreateShape(std::wstring name) const
 
 ShapeID ShapesFactory::RegisterShape(const std::wstring name, ShapeFactoryMethod factoryMethod)
 {
-	ShapeID ret = regList.size();
+	ShapeID ret = static_cast<ShapeID>(regList.size());
 	RegEntry re;
 	re.fm = factoryMethod;
 	re.name = name;
