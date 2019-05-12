@@ -1,19 +1,17 @@
 #pragma once
-#include <string>
+#include <vector>
 #include "shapes/BaseShape.h"
+
+typedef Custom::BaseShape* (*ShapeFactoryMethod)(void);
+typedef unsigned int ShapeID;
 
 class ShapesFactory
 {
 public:
-	static Custom::BaseShape* CreateShape(std::wstring name);
+	Custom::BaseShape* CreateShape(ShapeID shapeId) const;
+	ShapeID RegisterShape(ShapeFactoryMethod factoryMethod);
 
-public:
-	static constexpr const wchar_t* LINE		= L"Line";
-	static constexpr const wchar_t* RECTANGLE	= L"Rectangle";
-	static constexpr const wchar_t* SQUARE		= L"Square";
-	static constexpr const wchar_t* TRIANGLE	= L"Triangle";
-	static constexpr const wchar_t* POLYGON		= L"Polygon";
-	static constexpr const wchar_t* ELLIPSE		= L"Ellipse";
-	static constexpr const wchar_t* CIRCLE		= L"Circle";
+private:
+	std::vector<ShapeFactoryMethod> regList;
 };
 
