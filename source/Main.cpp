@@ -6,6 +6,7 @@
 #include "WinException.h"
 #include "ListShapes.h"
 #include "ShapesFactory.h"
+#include "shapes/DefaultShapes.h"
 #include "core/FileManager.h"
 
 #define WND_CLASS		L"MainWindow"
@@ -40,16 +41,20 @@
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void InitUI(HWND);
+void RegisterShapes(ShapesFactory* sf);
 void DrawButton(HWND, const wchar_t*, int, int, int, int, WORD);
 HWND DrawInput(HWND, int, int, int, int, WORD);
 void OnPaint(HWND hWnd);
-void AddShape(HWND hWnd);
-void AddStretchShape(HWND hWnd);
+void AddShape(HWND hWnd, const ShapesFactory* sf);
+ShapeID MapBID2ShapeID(DWORD bid);
+void AddStretchShape(HWND hWnd, const ShapesFactory* sf);
 void SelectNextShape(HWND hWnd);
 void DeselectShape(HWND hWnd);
 
 ListShapes* shapes;
-UINT currentTool;
+ShapeID currentShapeID;
+ShapesFactory sf;
+std::vector<ShapeID> shapesID;
 Gdiplus::Point points[2];
 Custom::BaseShape* stretchShape;
 Custom::BaseShape* selectedShape;
@@ -129,8 +134,9 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		case WM_CREATE:
 			InitUI(hWnd);
+			RegisterShapes(&sf);
 			shapes = new ListShapes;
-			currentTool = BID_LINE;
+			currentShapeID = MapBID2ShapeID(BID_LINE);
 			points[0].X = -1;
 			points[0].Y = -1;
 			points[1].X = -1;
@@ -146,12 +152,12 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case WM_LBUTTONDOWN:
 			points[0].X = GET_X_LPARAM(lParam);
 			points[0].Y = GET_Y_LPARAM(lParam);
-			AddStretchShape(hWnd);
+			AddStretchShape(hWnd, &sf);
 			break;
 		case WM_LBUTTONUP:
 			points[1].X = GET_X_LPARAM(lParam);
 			points[1].Y = GET_Y_LPARAM(lParam);
-			AddShape(hWnd);
+			AddShape(hWnd, &sf);
 			InvalidateRect(hWnd, NULL, FALSE);
 
 			points[0].X = -1;
@@ -179,7 +185,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				case BID_ELLIPSE:
 				case BID_CIRCLE:
 				case BID_TRIANGLE:
-					currentTool = static_cast<UINT>(wParam);
+					currentShapeID = MapBID2ShapeID(static_cast<DWORD>(wParam));
 					SetFocus(hWnd);
 					break;
 				case BID_SAVE:
@@ -190,7 +196,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				case BID_LOAD:
 					DeselectShape(hWnd);
 					while (!shapes->IsEmpty()) shapes->Pop();
-					FileManager::LoadText(shapes, L"test.txt");
+					FileManager::LoadText(&sf, shapes, L"test.txt");
 					InvalidateRect(hWnd, NULL, FALSE);
 					SetFocus(hWnd);
 					break;
@@ -264,6 +270,16 @@ void InitUI(HWND hWnd)
 	hInputY = DrawInput(hWnd, B_WIDTH * 1, B_HEIGHT, B_WIDTH, B_HEIGHT, NULL);
 	hInputWidth = DrawInput(hWnd, B_WIDTH * 2, B_HEIGHT, B_WIDTH, B_HEIGHT, NULL);
 	hInputHeight = DrawInput(hWnd, B_WIDTH * 3, B_HEIGHT, B_WIDTH, B_HEIGHT, NULL);
+}
+
+void RegisterShapes(ShapesFactory* sf)
+{
+	shapesID.push_back(sf->RegisterShape(Custom::Line::NAME, Custom::Line::ShapeFactory));
+	shapesID.push_back(sf->RegisterShape(Custom::Rectangle::NAME, Custom::Rectangle::ShapeFactory));
+	shapesID.push_back(sf->RegisterShape(Custom::Square::NAME, Custom::Square::ShapeFactory));
+	shapesID.push_back(sf->RegisterShape(Custom::Ellipse::NAME, Custom::Ellipse::ShapeFactory));
+	shapesID.push_back(sf->RegisterShape(Custom::Circle::NAME, Custom::Circle::ShapeFactory));
+	shapesID.push_back(sf->RegisterShape(Custom::Triangle::NAME, Custom::Triangle::ShapeFactory));
 }
 
 void DrawButton(
@@ -351,62 +367,39 @@ void OnPaint(HWND hWnd)
 	EndPaint(hWnd, &ps);
 }
 
-void AddShape(HWND hWnd)
+void AddShape(HWND hWnd, const ShapesFactory* sf)
 {
-	Custom::BaseShape* shape = nullptr;
-	switch (currentTool)
-	{
-		case BID_LINE:
-			shape = ShapesFactory::CreateShape(ShapesFactory::LINE);
-			break;
-		case BID_RECTANGLE:
-			shape = ShapesFactory::CreateShape(ShapesFactory::RECTANGLE);
-			break;
-		case BID_SQUARE:
-			shape = ShapesFactory::CreateShape(ShapesFactory::SQUARE);
-			break;
-		case BID_ELLIPSE:
-			shape = ShapesFactory::CreateShape(ShapesFactory::ELLIPSE);
-			break;
-		case BID_CIRCLE:
-			shape = ShapesFactory::CreateShape(ShapesFactory::CIRCLE);
-			break;
-		case BID_TRIANGLE:
-			shape = ShapesFactory::CreateShape(ShapesFactory::TRIANGLE);
-			break;
-		default:
-			throw DebugException(L"undefined shape");
-	}
+	Custom::BaseShape* shape = sf->CreateShape(currentShapeID);
 	shape->SetPoints(points[0].X, points[0].Y, points[1].X, points[1].Y);
 	shape->SetColor(Gdiplus::Color(0xFFFF0000));
 	shapes->Push(shape);
 }
 
-void AddStretchShape(HWND hWnd)
+ShapeID MapBID2ShapeID(DWORD bid)
 {
-	switch (currentTool)
+	switch (bid)
 	{
 	case BID_LINE:
-		stretchShape = ShapesFactory::CreateShape(ShapesFactory::LINE);
-		break;
+		return 0;
 	case BID_RECTANGLE:
-		stretchShape = ShapesFactory::CreateShape(ShapesFactory::RECTANGLE);
-		break;
+		return 1;
 	case BID_SQUARE:
-		stretchShape = ShapesFactory::CreateShape(ShapesFactory::SQUARE);
-		break;
+		return 2;
 	case BID_ELLIPSE:
-		stretchShape = ShapesFactory::CreateShape(ShapesFactory::ELLIPSE);
-		break;
+		return 3;
 	case BID_CIRCLE:
-		stretchShape = ShapesFactory::CreateShape(ShapesFactory::CIRCLE);
-		break;
+		return 4;
 	case BID_TRIANGLE:
-		stretchShape = ShapesFactory::CreateShape(ShapesFactory::TRIANGLE);
-		break;
+		return 5;
 	default:
-		throw DebugException(L"undefined shape");
+		throw Exception(std::wstring(L"Shape with BID = ") + std::to_wstring(bid) + std::wstring(L" is not implemented"));
 	}
+	return -1;
+}
+
+void AddStretchShape(HWND hWnd, const ShapesFactory* sf)
+{
+	stretchShape = sf->CreateShape(currentShapeID);
 	stretchShape->SetColor(Gdiplus::Color(0xFFFF0000));
 }
 
