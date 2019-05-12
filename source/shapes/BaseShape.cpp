@@ -50,12 +50,10 @@ void Custom::BaseShape::SetColor(Gdiplus::Color color)
 
 std::wstring Custom::BaseShape::SerializeText()
 {
-	throw Exception(L"BaseShape Serialize Text: TODO");
-	return std::wstring();
-	/*std::wstringstream ss;
-	ss << this->name << " "; Serialize problem
+	std::wstringstream ss;
+	ss << this->GetName() << " ";
 	ss << "Coordinates: (" << this->x1 << ", " << this->y1 << ") (" << this->x2 << ", " << this->y2 << ") Color: " << this->color.GetValue();
-	return ss.str();*/
+	return ss.str();
 }
 
 void Custom::BaseShape::DeserializeText(std::wstring text)

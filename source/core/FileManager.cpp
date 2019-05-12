@@ -29,7 +29,7 @@ void FileManager::SaveText(ListShapes* shapes, std::wstring filename)
 	file.close();
 }
 
-void FileManager::LoadText(ListShapes* shapes, std::wstring filename)
+void FileManager::LoadText(const ShapesFactory* shapesFactory, ListShapes* shapes, std::wstring filename)
 {
 	std::wifstream file(filename);
 
@@ -55,7 +55,7 @@ void FileManager::LoadText(ListShapes* shapes, std::wstring filename)
 		size_t endOfShapeName = shapeTextStart - 1;
 		std::wstring shapeName = shapeText.substr(0, endOfShapeName);
 
-		Custom::BaseShape* shape = ShapesFactory::CreateShape(shapeName);
+		Custom::BaseShape* shape = shapesFactory->CreateShape(shapeName);
 		shape->DeserializeText(shapeText.substr(shapeTextStart));
 
 		shapes->Push(shape);
