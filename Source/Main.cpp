@@ -4,9 +4,9 @@
 #include <sstream>
 #include "Exception.h"
 #include "WinException.h"
-#include "ShapesFactory.h"
 #include "ListShapes.h"
-#include "FileManager.h"
+#include "ShapesFactory.h"
+#include "core/FileManager.h"
 
 #define WND_CLASS		L"MainWindow"
 #define WND_NAME		L"Graphical Editor"

@@ -1,4 +1,4 @@
-GraphicalEditor.vcxproj.user
+*.vcxproj.user
 .vs/**
-Win32/**
+x86/**
 x64/**
