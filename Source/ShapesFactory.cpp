@@ -1,13 +1,13 @@
 #include "ShapesFactory.h"
 #include <sstream>
 #include "Exception.h"
-#include "Line.h"
-#include "Rectangle.h"
-#include "Square.h"
-#include "Triangle.h"
-#include "Polygon.h"
-#include "Ellipse.h"
-#include "Circle.h"
+#include "shapes/Line.h"
+#include "shapes/Rectangle.h"
+#include "shapes/Square.h"
+#include "shapes/Triangle.h"
+#include "shapes/Polygon.h"
+#include "shapes/Ellipse.h"
+#include "shapes/Circle.h"
 
 Custom::BaseShape* ShapesFactory::CreateShape(std::wstring name)
 {
