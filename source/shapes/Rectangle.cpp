@@ -1,23 +1,20 @@
 #include "Rectangle.h"
-#include "../ShapesFactory.h"
 
-Custom::Rectangle::Rectangle()
-	:
-	Line(ShapesFactory::RECTANGLE)
-{
-}
-
-Custom::Rectangle::Rectangle(const wchar_t* name)
-	:
-	Line(name)
-{
-}
 
 void Custom::Rectangle::Redraw(Gdiplus::Graphics* const graphics)
 {
-	using namespace Gdiplus;
-	Pen pen(this->color);
+	Gdiplus::Pen pen(this->color);
 
-	Rect rect(this->x, this->y, this->width, this->height);
+	Gdiplus::Rect rect(this->x, this->y, this->width, this->height);
 	graphics->DrawRectangle(&pen, rect);
+}
+
+Custom::BaseShape* Custom::Rectangle::ShapeFactory()
+{
+	return new Rectangle();
+}
+
+std::wstring Custom::Rectangle::GetName()
+{
+	return this->NAME;
 }

@@ -14,7 +14,6 @@ namespace Custom {
 		public IDrawable
 	{
 	public:
-		BaseShape(const wchar_t* name);
 		virtual void SelectPoint(int x, int y) override;
 		virtual void SelectArea(int x1, int y1, int x2, int y2) override;
 		virtual void SetPoints(int x1, int y1, int x2, int y2);
@@ -22,6 +21,7 @@ namespace Custom {
 		virtual int GetY();
 		virtual int GetWidth();
 		virtual int GetHeight();
+		virtual std::wstring GetName() = 0;
 		virtual Gdiplus::Color GetColor();
 		void SetColor(Gdiplus::Color color);
 		virtual std::wstring SerializeText() override;
@@ -34,7 +34,6 @@ namespace Custom {
 		int x, y, width, height;
 		int x1, y1, x2, y2;
 		Gdiplus::Color color;
-		const wchar_t* name;
 	};
 }
 

@@ -3,11 +3,6 @@
 #include <sstream>
 #include <string>
 
-Custom::BaseShape::BaseShape(const wchar_t* name)
-	:
-	name(name)
-{
-}
 
 void Custom::BaseShape::SelectPoint(int x, int y)
 {
@@ -55,10 +50,12 @@ void Custom::BaseShape::SetColor(Gdiplus::Color color)
 
 std::wstring Custom::BaseShape::SerializeText()
 {
-	std::wstringstream ss;
-	ss << this->name << " ";
+	throw Exception(L"BaseShape Serialize Text: TODO");
+	return std::wstring();
+	/*std::wstringstream ss;
+	ss << this->name << " "; Serialize problem
 	ss << "Coordinates: (" << this->x1 << ", " << this->y1 << ") (" << this->x2 << ", " << this->y2 << ") Color: " << this->color.GetValue();
-	return ss.str();
+	return ss.str();*/
 }
 
 void Custom::BaseShape::DeserializeText(std::wstring text)

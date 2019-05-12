@@ -6,9 +6,12 @@ namespace Custom {
 		public Ellipse
 	{
 	public:
-		Circle();
-		Circle(const wchar_t* name);
 		virtual void Redraw(Gdiplus::Graphics* const graphics);
+		static BaseShape* ShapeFactory();
+		virtual std::wstring GetName() override;
+
+	public:
+		static constexpr const wchar_t* NAME = L"Circle";
 	};
 }
 

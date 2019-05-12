@@ -1,23 +1,17 @@
 #include "Line.h"
-#include "../ShapesFactory.h"
-#include <sstream>
 
-using namespace Gdiplus;
-
-Custom::Line::Line()
-	:
-	BaseShape(ShapesFactory::LINE)
+void Custom::Line::Redraw(Gdiplus::Graphics* const graphics)
 {
-}
-
-Custom::Line::Line(const wchar_t* name)
-	:
-	BaseShape(name)
-{
-}
-
-void Custom::Line::Redraw(Graphics* const graphics)
-{
-	Pen pen(this->color);
+	Gdiplus::Pen pen(this->color);
 	graphics->DrawLine(&pen, this->x1, this->y1, this->x2, this->y2);
+}
+
+Custom::BaseShape* Custom::Line::ShapeFactory()
+{
+	return new Line();
+}
+
+std::wstring Custom::Line::GetName()
+{
+	return this->NAME;
 }
