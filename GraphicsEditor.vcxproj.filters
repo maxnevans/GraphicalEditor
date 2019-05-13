@@ -69,12 +69,6 @@
     <ClInclude Include="source\Exception.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\List.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\ListShapes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="source\WinException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -84,11 +78,11 @@
     <ClInclude Include="source\core\FileManager.h">
       <Filter>Header Files\core</Filter>
     </ClInclude>
-    <ClInclude Include="source\ShapesFactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="source\shapes\DefaultShapes.h">
       <Filter>Header Files\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\ShapesFactory.h">
+      <Filter>Header Files\core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -119,12 +113,6 @@
     <ClCompile Include="source\Exception.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\List.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\ListShapes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -137,8 +125,8 @@
     <ClCompile Include="source\core\FileManager.cpp">
       <Filter>Source Files\core</Filter>
     </ClCompile>
-    <ClCompile Include="source\ShapesFactory.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="source\core\ShapesFactory.cpp">
+      <Filter>Source Files\core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

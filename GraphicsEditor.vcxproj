@@ -21,14 +21,12 @@
   <ItemGroup>
     <ClInclude Include="source\core\Application.h" />
     <ClInclude Include="source\core\FileManager.h" />
+    <ClInclude Include="source\core\ShapesFactory.h" />
     <ClInclude Include="source\Exception.h" />
     <ClInclude Include="source\interfaces\ICursor.h" />
     <ClInclude Include="source\interfaces\IDeserializable.h" />
     <ClInclude Include="source\interfaces\IDrawable.h" />
     <ClInclude Include="source\interfaces\ISerializable.h" />
-    <ClInclude Include="source\List.h" />
-    <ClInclude Include="source\ListShapes.h" />
-    <ClInclude Include="source\ShapesFactory.h" />
     <ClInclude Include="source\shapes\BaseShape.h" />
     <ClInclude Include="source\shapes\Circle.h" />
     <ClInclude Include="source\shapes\DefaultShapes.h" />
@@ -43,11 +41,9 @@
   <ItemGroup>
     <ClCompile Include="source\core\Application.cpp" />
     <ClCompile Include="source\core\FileManager.cpp" />
+    <ClCompile Include="source\core\ShapesFactory.cpp" />
     <ClCompile Include="source\Exception.cpp" />
-    <ClCompile Include="source\List.cpp" />
-    <ClCompile Include="source\ListShapes.cpp" />
     <ClCompile Include="source\Main.cpp" />
-    <ClCompile Include="source\ShapesFactory.cpp" />
     <ClCompile Include="source\shapes\BaseShape.cpp" />
     <ClCompile Include="source\shapes\Circle.cpp" />
     <ClCompile Include="source\shapes\Ellipse.cpp" />
