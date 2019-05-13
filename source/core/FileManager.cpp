@@ -1,10 +1,9 @@
 #include "FileManager.h"
 #include "../Exception.h"
-#include "../ShapesFactory.h"
 #include <fstream>
 #include <sstream>
 
-void FileManager::SaveText(ListShapes* shapes, std::wstring filename)
+void FileManager::SaveText(const std::vector<Custom::BaseShape*>* shapes, std::wstring filename)
 {
 	std::wofstream file(filename);
 
@@ -15,21 +14,14 @@ void FileManager::SaveText(ListShapes* shapes, std::wstring filename)
 		throw Exception(ss.str());
 	}
 
-	ListShapes* temp = new ListShapes;
-	while (!shapes->IsEmpty())
-	{
-		Custom::BaseShape* shape = shapes->Pop();
+	for (Custom::BaseShape* shape : *shapes)
 		file << shape->SerializeText() << std::endl;
-		temp->Push(shape);
-	}
-
-	while (!temp->IsEmpty()) shapes->Push(temp->Pop());
-	delete temp;
 
 	file.close();
 }
 
-void FileManager::LoadText(const ShapesFactory* shapesFactory, ListShapes* shapes, std::wstring filename)
+void FileManager::LoadText(const ShapesFactory* shapesFactory, 
+	std::vector<Custom::BaseShape*>* shapes, std::wstring filename)
 {
 	std::wifstream file(filename);
 
@@ -58,7 +50,7 @@ void FileManager::LoadText(const ShapesFactory* shapesFactory, ListShapes* shape
 		Custom::BaseShape* shape = shapesFactory->CreateShape(shapeName);
 		shape->DeserializeText(shapeText.substr(shapeTextStart));
 
-		shapes->Push(shape);
+		shapes->push_back(shape);
 
 		std::getline(buffer, shapeText);
 	}

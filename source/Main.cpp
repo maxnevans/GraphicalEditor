@@ -2,11 +2,12 @@
 #include <windowsx.h>
 #include <gdiplus.h>
 #include <sstream>
+#include <vector>
+#include <iterator>
 #include "Exception.h"
 #include "WinException.h"
-#include "ListShapes.h"
-#include "ShapesFactory.h"
 #include "shapes/DefaultShapes.h"
+#include "core/ShapesFactory.h"
 #include "core/FileManager.h"
 
 #define WND_CLASS		L"MainWindow"
@@ -51,13 +52,13 @@ void AddStretchShape(HWND hWnd, const ShapesFactory* sf);
 void SelectNextShape(HWND hWnd);
 void DeselectShape(HWND hWnd);
 
-ListShapes* shapes;
+std::vector<Custom::BaseShape*> vecShapes;
+size_t selectedShapeIndex;
 ShapeID currentShapeID;
 ShapesFactory sf;
 std::vector<ShapeID> shapesID;
 Gdiplus::Point points[2];
 Custom::BaseShape* stretchShape;
-Custom::BaseShape* selectedShape;
 HWND hInputX, hInputY, hInputWidth, hInputHeight;
 
 int WINAPI wWinMain(
@@ -135,14 +136,13 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case WM_CREATE:
 			InitUI(hWnd);
 			RegisterShapes(&sf);
-			shapes = new ListShapes;
 			currentShapeID = MapBID2ShapeID(BID_LINE);
 			points[0].X = -1;
 			points[0].Y = -1;
 			points[1].X = -1;
 			points[1].Y = -1;
 			stretchShape = nullptr;
-			selectedShape = nullptr;
+			selectedShapeIndex = -1;
 			break;
 		case WM_PAINT:
 			OnPaint(hWnd);
@@ -190,21 +190,28 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					break;
 				case BID_SAVE:
 					DeselectShape(hWnd);
-					FileManager::SaveText(shapes, L"test.txt");
+					FileManager::SaveText(&vecShapes, L"test.txt");
 					SetFocus(hWnd);
 					break;
 				case BID_LOAD:
 					DeselectShape(hWnd);
-					while (!shapes->IsEmpty()) shapes->Pop();
-					FileManager::LoadText(&sf, shapes, L"test.txt");
+					vecShapes.clear();
+					FileManager::LoadText(&sf, &vecShapes, L"test.txt");
 					InvalidateRect(hWnd, NULL, FALSE);
 					SetFocus(hWnd);
 					break;
 				case BID_DELETE:
-					if (selectedShape)
+					if (selectedShapeIndex != -1)
 					{
-						delete selectedShape;
+						size_t tempIndex = selectedShapeIndex;
 						DeselectShape(hWnd);
+						std::vector<Custom::BaseShape*> temp;
+						for (int i = 0; i < vecShapes.size(); i++)
+						{
+							if (i == tempIndex) continue;
+							temp.push_back(vecShapes[i]);
+						}
+						vecShapes = temp;
 					}
 					SetFocus(hWnd);
 					break;
@@ -227,7 +234,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					int y1 = y;
 					int x2 = x + width;
 					int y2 = y + height;
-					selectedShape->SetPoints(x1, y1, x2, y2);
+					vecShapes[selectedShapeIndex]->SetPoints(x1, y1, x2, y2);
 					InvalidateRect(hWnd, NULL, FALSE);
 					SetFocus(hWnd);
 					break;
@@ -346,20 +353,11 @@ void OnPaint(HWND hWnd)
 	SolidBrush sb(Color::LightGray);
 	graphics.FillRectangle(&sb, 0, 0, WND_WIDTH, WND_HEIGHT);
 
-	ListShapes* temp = new ListShapes();
-	while (!shapes->IsEmpty())
-	{
-		Custom::BaseShape* shape = shapes->Pop();
+	for(Custom::BaseShape* shape : vecShapes)
 		shape->Redraw(&graphics);
-		temp->Push(shape);
-	}
-	delete shapes;
-	shapes = temp;
 
 	if (stretchShape)
 		stretchShape->Redraw(&graphics);
-	if (selectedShape)
-		selectedShape->Redraw(&graphics);
 
 	BitBlt(hdc, 0, 0, WND_WIDTH, WND_HEIGHT, hdcMem, 0, 0, SRCCOPY);
 	DeleteDC(hdcMem);
@@ -372,7 +370,7 @@ void AddShape(HWND hWnd, const ShapesFactory* sf)
 	Custom::BaseShape* shape = sf->CreateShape(currentShapeID);
 	shape->SetPoints(points[0].X, points[0].Y, points[1].X, points[1].Y);
 	shape->SetColor(Gdiplus::Color(0xFFFF0000));
-	shapes->Push(shape);
+	vecShapes.push_back(shape);
 }
 
 ShapeID MapBID2ShapeID(DWORD bid)
@@ -405,25 +403,23 @@ void AddStretchShape(HWND hWnd, const ShapesFactory* sf)
 
 void SelectNextShape(HWND hWnd)
 {
-	if (!shapes->IsEmpty())
+	if (!vecShapes.empty())
 	{
-		if (selectedShape)
-		{
-			selectedShape->SetColor(Gdiplus::Color::Red);
-			shapes->Push(selectedShape);
-		}
-		selectedShape = shapes->Pop();
-		selectedShape->SetColor(Gdiplus::Color::Green);
+		if (selectedShapeIndex != -1)
+			vecShapes[selectedShapeIndex]->SetColor(Gdiplus::Color::Red);
+		
+		selectedShapeIndex = (selectedShapeIndex + 1) % vecShapes.size();
+		vecShapes[selectedShapeIndex]->SetColor(Gdiplus::Color::Green);
 		InvalidateRect(hWnd, NULL, FALSE);
 
 		wchar_t buffer[256];
-		wsprintf(buffer, L"%d", selectedShape->GetX());
+		wsprintf(buffer, L"%d", vecShapes[selectedShapeIndex]->GetX());
 		SetWindowText(hInputX, buffer);
-		wsprintf(buffer, L"%d", selectedShape->GetY());
+		wsprintf(buffer, L"%d", vecShapes[selectedShapeIndex]->GetY());
 		SetWindowText(hInputY, buffer);
-		wsprintf(buffer, L"%d", selectedShape->GetWidth());
+		wsprintf(buffer, L"%d", vecShapes[selectedShapeIndex]->GetWidth());
 		SetWindowText(hInputWidth, buffer);
-		wsprintf(buffer, L"%d", selectedShape->GetHeight());
+		wsprintf(buffer, L"%d", vecShapes[selectedShapeIndex]->GetHeight());
 		SetWindowText(hInputHeight, buffer);
 
 		EnableWindow(hInputX, TRUE);
@@ -435,12 +431,13 @@ void SelectNextShape(HWND hWnd)
 
 void DeselectShape(HWND hWnd)
 {
-	if (selectedShape)
+	if (selectedShapeIndex != -1)
 	{
-		selectedShape->SetColor(Gdiplus::Color::Red);
-		shapes->Push(selectedShape);
+		vecShapes[selectedShapeIndex]->SetColor(Gdiplus::Color::Red);
+
 		InvalidateRect(hWnd, NULL, FALSE);
-		selectedShape = nullptr;
+		selectedShapeIndex = -1;
+
 		SetWindowText(hInputX, NULL);
 		SetWindowText(hInputY, NULL);
 		SetWindowText(hInputWidth, NULL);
