@@ -8,13 +8,6 @@ _Exception::_Exception(std::wstring message)
 	this->filename = L"";
 }
 
-_Exception::_Exception(std::wstring message, int line, std::wstring filename)
-{
-	this->message = message;
-	this->line = line;
-	this->filename = filename;
-}
-
 std::wstring _Exception::what() noexcept
 {
 	std::wstringstream ss;
