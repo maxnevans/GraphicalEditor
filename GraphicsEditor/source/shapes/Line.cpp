@@ -11,7 +11,7 @@ BaseShape* Custom::Line::ShapeFactory()
 	return new Line();
 }
 
-std::wstring Custom::Line::GetName()
+const wchar_t* Custom::Line::GetName()
 {
 	return this->NAME;
 }

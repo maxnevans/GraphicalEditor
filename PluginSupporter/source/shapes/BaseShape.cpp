@@ -38,25 +38,25 @@ int BaseShape::GetHeight()
 	return this->height;
 }
 
-Gdiplus::Color BaseShape::GetColor()
+Gdiplus::ARGB BaseShape::GetColor()
 {
 	return this->color;
 }
 
-void BaseShape::SetColor(Gdiplus::Color color)
+void BaseShape::SetColor(Gdiplus::ARGB color)
 {
 	this->color = color;
 }
 
-std::wstring BaseShape::SerializeText()
+const wchar_t* BaseShape::SerializeText()
 {
 	std::wstringstream ss;
 	ss << this->GetName() << " ";
-	ss << "Coordinates: (" << this->x1 << ", " << this->y1 << ") (" << this->x2 << ", " << this->y2 << ") Color: " << this->color.GetValue();
-	return ss.str();
+	ss << "Coordinates: (" << this->x1 << ", " << this->y1 << ") (" << this->x2 << ", " << this->y2 << ") Color: " << this->color;
+	return ss.str().c_str();
 }
 
-void BaseShape::DeserializeText(std::wstring text)
+void BaseShape::DeserializeText(const wchar_t* text)
 {
 	std::wstringstream ss(text);
 
@@ -72,9 +72,10 @@ void BaseShape::DeserializeText(std::wstring text)
 
 	Gdiplus::ARGB colorValue;
 	ss >> colorValue;
-	this->color.SetValue(colorValue);
+	this->color = colorValue;
 
-	if (ss.fail()) throw Exception(L"undefined text format");
+	if (ss.fail())
+		throw Exception(L"undefined text format");
 
 	this->x = this->x1 < this->x2 ? this->x1 : this->x2;
 	this->y = this->y1 < this->y2 ? this->y1 : this->y2;

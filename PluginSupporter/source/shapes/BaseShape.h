@@ -23,11 +23,11 @@ public:
 	virtual int GetY();
 	virtual int GetWidth();
 	virtual int GetHeight();
-	virtual std::wstring GetName() = 0;
-	virtual Gdiplus::Color GetColor();
-	void SetColor(Gdiplus::Color color);
-	virtual std::wstring SerializeText() override;
-	virtual void DeserializeText(std::wstring text) override;
+	virtual const wchar_t* GetName() = 0;
+	virtual Gdiplus::ARGB GetColor();
+	void SetColor(Gdiplus::ARGB color);
+	virtual const wchar_t* SerializeText() override;
+	virtual void DeserializeText(const wchar_t* text) override;
 
 protected:
 	void SetPointsSafe(int x1, int y1, int x2, int y2);
@@ -35,5 +35,5 @@ protected:
 protected:
 	int x, y, width, height;
 	int x1, y1, x2, y2;
-	Gdiplus::Color color;
+	Gdiplus::ARGB color;
 };

@@ -18,7 +18,7 @@ BaseShape* Custom::Circle::ShapeFactory()
 	return new Custom::Circle();
 }
 
-std::wstring Custom::Circle::GetName()
+const wchar_t* Custom::Circle::GetName()
 {
 	return this->NAME;
 }

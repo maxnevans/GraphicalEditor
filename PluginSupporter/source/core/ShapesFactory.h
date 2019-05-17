@@ -2,21 +2,24 @@
 #include <vector>
 #include "../DLLSupport.h"
 #include "../shapes/BaseShape.h"
+#include <vector>
+#include <string>
 
 typedef BaseShape* (*ShapeFactoryMethod)(void);
 typedef unsigned int ShapeID;
 
-class __dll ShapesFactory
+class ShapesFactory
 {
 private:
 	typedef struct _RegEntry {
 		ShapeFactoryMethod fm;
 		std::wstring name;
 	} RegEntry;
+
 public:
-	BaseShape* CreateShape(ShapeID shapeId) const;
-	BaseShape* CreateShape(std::wstring name) const;
-	ShapeID RegisterShape(const std::wstring name, ShapeFactoryMethod factoryMethod);
+	__dll BaseShape* CreateShape(ShapeID shapeId) const;
+	__dll BaseShape* CreateShape(const wchar_t* name) const;
+	__dll ShapeID RegisterShape(const wchar_t* name, ShapeFactoryMethod factoryMethod);
 
 private:
 	std::vector<RegEntry> regList;

@@ -19,7 +19,7 @@ void TestShape::Redraw(Gdiplus::Graphics* const graphics)
 	return new TestShape();
 }
 
-std::wstring TestShape::GetName()
+const wchar_t* TestShape::GetName()
 {
 	return this->NAME;
 }

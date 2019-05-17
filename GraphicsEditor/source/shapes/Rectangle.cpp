@@ -14,7 +14,7 @@ BaseShape* Custom::Rectangle::ShapeFactory()
 	return new Rectangle();
 }
 
-std::wstring Custom::Rectangle::GetName()
+const wchar_t* Custom::Rectangle::GetName()
 {
 	return this->NAME;
 }

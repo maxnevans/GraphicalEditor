@@ -91,11 +91,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)distrib\x86\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)support_files\x86\$(Configuration)\$(ProjectName)</IntDir>
+    <IntDir>$(SolutionDir)support_files\x86\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)distrib\x86\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)support_files\x86\$(Configuration)\$(ProjectName)</IntDir>
+    <IntDir>$(SolutionDir)support_files\x86\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

@@ -1,20 +1,14 @@
 #include "BaseException.h"
 #include <sstream>
+#include <string.h>
+#include <stdlib.h>
 
-BaseException::BaseException(std::wstring message)
+BaseException::BaseException(const wchar_t* message)
 {
 	this->message = message;
-	this->line = -1;
-	this->filename = L"";
 }
 
-std::wstring BaseException::what() noexcept
+const wchar_t* BaseException::what() const noexcept
 {
-	std::wstringstream ss;
-	ss << this->message;
-	if (this->line != -1)
-	{
-		ss << L" on line " << this->line << L" in file " << this->filename;
-	}
-	return ss.str();
+	return this->message.c_str();
 }

@@ -7,6 +7,6 @@ class Plugin
 {
 public:
 	virtual ShapeFactoryMethod GetShapeFactory();
-	virtual std::wstring GetShapeName();
+	virtual const wchar_t* GetShapeName();
 };
 

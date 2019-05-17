@@ -1,16 +1,16 @@
 #include "WinException.h"
 #include <sstream>
 
-WinException::WinException(std::wstring message)
+WinException::WinException(const wchar_t* message)
 	:
 	BaseException(message)
 {
 	this->code = GetLastError();
 }
 
-std::wstring WinException::what() noexcept
+const wchar_t* WinException::what() const noexcept
 {
 	std::wstringstream ss;
 	ss << BaseException::what() << L"with code [" << this->code << "]";
-	return ss.str();
+	return ss.str().c_str();
 }

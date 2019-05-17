@@ -6,7 +6,7 @@ ShapeFactoryMethod Plugin::GetShapeFactory()
 	return TestShape::ShapeFactory;
 }
 
-std::wstring Plugin::GetShapeName()
+const wchar_t* Plugin::GetShapeName()
 {
 	return TestShape::NAME;
 }

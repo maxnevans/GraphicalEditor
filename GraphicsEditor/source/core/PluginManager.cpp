@@ -14,7 +14,7 @@ PluginManager::PluginManager(std::wstring directory)
 	HANDLE hPlugin = FindFirstFile(searchQuery.c_str(), &fd);
 
 	if (hPlugin == INVALID_HANDLE_VALUE)
-		throw Exception(L"Failed to open plugin dir: " + directory);
+		throw Exception(std::wstring(L"Failed to open plugin dir: " + directory).c_str());
 
 	do
 	{

@@ -19,7 +19,7 @@ BaseShape* Custom::Triangle::ShapeFactory()
 	return new Triangle();
 }
 
-std::wstring Custom::Triangle::GetName()
+const wchar_t* Custom::Triangle::GetName()
 {
 	return this->NAME;
 }

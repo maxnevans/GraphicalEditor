@@ -88,7 +88,8 @@ int WINAPI wWinMain(
 		wcex.lpszClassName = WND_CLASS;
 
 		DWORD retVal = RegisterClassEx(&wcex);
-		if (!retVal) throw WinException(L"register window");
+		if (!retVal) 
+			throw WinException(L"register window");
 
 		RECT rDesk;
 		GetWindowRect(GetDesktopWindow(), &rDesk);
@@ -104,7 +105,8 @@ int WINAPI wWinMain(
 			hInstance,
 			0
 		);
-		if (hWnd == NULL) throw WinException(L"create window");
+		if (hWnd == NULL) 
+			throw WinException(L"create window");
 		UpdateWindow(hWnd);
 
 		MSG msg = { 0 };
@@ -118,9 +120,9 @@ int WINAPI wWinMain(
 		Gdiplus::GdiplusShutdown(gdiplusToken);
 		return static_cast<int>(msg.wParam);
 	}
-	catch (Exception error)
+	catch (Exception& error)
 	{
-		MessageBox(NULL, error.what().c_str(), L"Fatal error", MB_OK | MB_ICONERROR);
+		MessageBox(NULL, error.what(), L"Fatal error", MB_OK | MB_ICONERROR);
 		exit(-1);
 	}
 	catch (...)
@@ -144,11 +146,11 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
 				pm = new PluginManager(L"plugins");
 			}
-			catch (Exception error)
+			catch (Exception& error)
 			{
 				delete pm;
 				pm = nullptr;
-				MessageBox(hWnd, error.what().c_str(), L"Plugin Manager Warning", MB_OK | MB_ICONWARNING);
+				MessageBox(hWnd, error.what(), L"Plugin Manager Warning", MB_OK | MB_ICONWARNING);
 			}
 			RegisterShapes(pm, &sf);
 			currentShapeID = MapBID2ShapeID(BID_LINE);
@@ -222,7 +224,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					size_t tempIndex = selectedShapeIndex;
 					DeselectShape(hWnd);
 					std::vector<BaseShape*> temp;
-					for (int i = 0; i < vecShapes.size(); i++)
+					for (unsigned int i = 0; i < vecShapes.size(); i++)
 					{
 						if (i == tempIndex) continue;
 						temp.push_back(vecShapes[i]);
@@ -275,9 +277,9 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
-	catch (Exception error)
+	catch (Exception& error)
 	{
-		MessageBox(NULL, error.what().c_str(), L"Fatal error", MB_OK | MB_ICONERROR);
+		MessageBox(NULL, error.what(), L"Fatal error", MB_OK | MB_ICONERROR);
 		exit(-1);
 	}
 }
@@ -316,7 +318,7 @@ void RegisterShapes(const PluginManager* pm, ShapesFactory* sf)
 
 	std::vector<CustomPlugin> plugins = pm->GetPlugins();
 	for (const CustomPlugin plugin : plugins)
-		shapesID.push_back(sf->RegisterShape(plugin.name, plugin.factory));
+		shapesID.push_back(sf->RegisterShape(plugin.name.c_str(), plugin.factory));
 }
 
 void DrawButton(
@@ -338,7 +340,8 @@ void DrawButton(
 		GetModuleHandle(NULL),
 		NULL
 	);
-	if (!hTest) throw WinException(L"button");
+	if (!hTest)
+		throw WinException(L"button");
 }
 
 HWND DrawInput(HWND hParent, int x, int y, int width, int height, WORD id)
@@ -355,7 +358,8 @@ HWND DrawInput(HWND hParent, int x, int y, int width, int height, WORD id)
 		GetModuleHandle(NULL),
 		NULL
 	);
-	if (!hInput) throw WinException(L"input");
+	if (!hInput)
+		throw WinException(L"input");
 
 	LONG styles = GetWindowLong(hInput, GWL_STYLE);
 	SetWindowLong(hInput, GWL_STYLE, styles | ES_NUMBER);
@@ -399,7 +403,7 @@ void AddShape(HWND hWnd, const ShapesFactory* sf)
 {
 	BaseShape* shape = sf->CreateShape(currentShapeID);
 	shape->SetPoints(points[0].X, points[0].Y, points[1].X, points[1].Y);
-	shape->SetColor(Gdiplus::Color(0xFFFF0000));
+	shape->SetColor(0xFFFF0000);
 	vecShapes.push_back(shape);
 }
 
@@ -422,7 +426,7 @@ ShapeID MapBID2ShapeID(DWORD bid)
 	case BID_TESTSHAPE:
 		return 6;
 	default:
-		throw Exception(std::wstring(L"Shape with BID = ") + std::to_wstring(bid) + std::wstring(L" is not implemented"));
+		throw Exception(std::wstring(L"Shape with BID = " + std::to_wstring(bid) + L" is not implemented").c_str());
 	}
 	return -1;
 }
@@ -430,7 +434,7 @@ ShapeID MapBID2ShapeID(DWORD bid)
 void AddStretchShape(HWND hWnd, const ShapesFactory* sf)
 {
 	stretchShape = sf->CreateShape(currentShapeID);
-	stretchShape->SetColor(Gdiplus::Color(0xFFFF0000));
+	stretchShape->SetColor(0xFFFF0000);
 }
 
 void SelectNextShape(HWND hWnd)

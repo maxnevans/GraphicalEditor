@@ -1,10 +1,9 @@
 #pragma once
-#include <string>
 #include "../DLLSupport.h"
 
 class __dll IDeserializable
 {
 public:
-	virtual void DeserializeText(std::wstring text) = 0;
+	virtual void DeserializeText(const wchar_t* text) = 0;
 };
 

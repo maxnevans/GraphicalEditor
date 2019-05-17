@@ -11,7 +11,7 @@ void FileManager::SaveText(const std::vector<BaseShape*>* shapes, std::wstring f
 	{
 		std::wstringstream ss;
 		ss << L"Failed to open file [" << filename << L"]";
-		throw Exception(ss.str());
+		throw Exception(ss.str().c_str());
 	}
 
 	for (BaseShape* shape : *shapes)
@@ -29,7 +29,7 @@ void FileManager::LoadText(const ShapesFactory* shapesFactory,
 	{
 		std::wstringstream ss;
 		ss << L"Failed to open file [" << filename << L"]";
-		throw Exception(ss.str());
+		throw Exception(ss.str().c_str());
 	}
 
 	std::wstringstream buffer;
@@ -47,8 +47,8 @@ void FileManager::LoadText(const ShapesFactory* shapesFactory,
 		size_t endOfShapeName = shapeTextStart - 1;
 		std::wstring shapeName = shapeText.substr(0, endOfShapeName);
 
-		BaseShape* shape = shapesFactory->CreateShape(shapeName);
-		shape->DeserializeText(shapeText.substr(shapeTextStart));
+		BaseShape* shape = shapesFactory->CreateShape(shapeName.c_str());
+		shape->DeserializeText(shapeText.substr(shapeTextStart).c_str());
 
 		shapes->push_back(shape);
 

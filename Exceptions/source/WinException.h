@@ -3,12 +3,12 @@
 #include "BaseException.h"
 #include "LightWindows.h"
 
-class __dll WinException :
+class WinException :
 	public BaseException
 {
 public:
-	WinException(std::wstring message = L"");
-	virtual std::wstring what() noexcept override;
+	__dll WinException(const wchar_t* message = L"");
+	__dll virtual const wchar_t* what() const noexcept override;
 
 private:
 	unsigned long code;

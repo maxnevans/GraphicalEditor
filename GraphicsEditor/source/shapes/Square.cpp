@@ -20,7 +20,7 @@ BaseShape* Custom::Square::ShapeFactory()
 	return new Square();
 }
 
-std::wstring Custom::Square::GetName()
+const wchar_t* Custom::Square::GetName()
 {
 	return this->NAME;
 }

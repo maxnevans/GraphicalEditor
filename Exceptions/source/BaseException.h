@@ -2,14 +2,19 @@
 #include "DLLSupport.h"
 #include <string>
 
-class __dll BaseException
+class __dll IBaseException
 {
 public:
-	BaseException(std::wstring message = L"");
-	virtual std::wstring what() noexcept;
-private:
+	virtual const wchar_t* what() const noexcept = 0;
+};
 
+class BaseException :
+	public IBaseException
+{
+public:
+	__dll BaseException(const wchar_t* message = L"");
+	__dll virtual const wchar_t* what() const noexcept;
+
+private:
 	std::wstring message;
-	int line;
-	std::wstring filename;
 };

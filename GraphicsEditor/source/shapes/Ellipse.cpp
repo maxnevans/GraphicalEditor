@@ -13,7 +13,7 @@ BaseShape* Custom::Ellipse::ShapeFactory()
 	return new Ellipse();
 }
 
-std::wstring Custom::Ellipse::GetName()
+const wchar_t* Custom::Ellipse::GetName()
 {
 	return this->NAME;
 }
