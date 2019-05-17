@@ -52,6 +52,9 @@
     <ProjectReference Include="..\PluginSupporter\PluginSupporter.vcxproj">
       <Project>{0173f1fa-3f8e-4149-bc43-0ccf91f18a72}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\TestPlugin\PluginTemplate.vcxproj">
+      <Project>{3b958958-99d8-4747-9f71-de8cbefb56d5}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
