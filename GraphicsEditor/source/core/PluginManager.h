@@ -1,8 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "ShapesFactory.h"
-#include "../interfaces/IPluginLibrary.h"
+#include "../../../PluginSupporter/source/PluginSupporter.h"
 
 #define PLUGIN_EXTENSION	L".dll"
 

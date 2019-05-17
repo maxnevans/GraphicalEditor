@@ -9,7 +9,7 @@ void Custom::Rectangle::Redraw(Gdiplus::Graphics* const graphics)
 	graphics->DrawRectangle(&pen, rect);
 }
 
-Custom::BaseShape* Custom::Rectangle::ShapeFactory()
+BaseShape* Custom::Rectangle::ShapeFactory()
 {
 	return new Rectangle();
 }

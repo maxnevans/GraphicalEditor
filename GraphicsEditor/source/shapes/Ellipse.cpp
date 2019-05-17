@@ -8,7 +8,7 @@ void Custom::Ellipse::Redraw(Gdiplus::Graphics* const graphics)
 	graphics->DrawEllipse(&pen, rect);
 }
 
-Custom::BaseShape* Custom::Ellipse::ShapeFactory()
+BaseShape* Custom::Ellipse::ShapeFactory()
 {
 	return new Ellipse();
 }

@@ -1,8 +1,8 @@
 #include "ShapesFactory.h"
-#include "../Exception.h"
+#include "../../../Exceptions/source/Exceptions.h"
 #include <assert.h>
 
-Custom::BaseShape* ShapesFactory::CreateShape(ShapeID shapeId) const
+BaseShape* ShapesFactory::CreateShape(ShapeID shapeId) const
 {
 	assert(shapeId >= 0);
 	assert(shapeId < regList.size());
@@ -10,7 +10,7 @@ Custom::BaseShape* ShapesFactory::CreateShape(ShapeID shapeId) const
 	return regList[shapeId].fm();
 }
 
-Custom::BaseShape* ShapesFactory::CreateShape(std::wstring name) const
+BaseShape* ShapesFactory::CreateShape(std::wstring name) const
 {
 	for (RegEntry re : regList)
 		if (re.name == name)

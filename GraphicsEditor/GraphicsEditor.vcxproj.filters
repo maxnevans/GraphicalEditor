@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\interfaces">
-      <UniqueIdentifier>{2ff08eb0-1ede-40d5-9c25-57b200bb45ce}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\shapes">
       <UniqueIdentifier>{68ef71a9-7e88-454d-be9c-cd6429e3c8f5}</UniqueIdentifier>
     </Filter>
@@ -30,21 +27,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\interfaces\ICursor.h">
-      <Filter>Header Files\interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="source\interfaces\IDeserializable.h">
-      <Filter>Header Files\interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="source\interfaces\IDrawable.h">
-      <Filter>Header Files\interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="source\interfaces\ISerializable.h">
-      <Filter>Header Files\interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="source\shapes\BaseShape.h">
-      <Filter>Header Files\shapes</Filter>
-    </ClInclude>
     <ClInclude Include="source\shapes\Circle.h">
       <Filter>Header Files\shapes</Filter>
     </ClInclude>
@@ -66,32 +48,17 @@
     <ClInclude Include="source\shapes\Triangle.h">
       <Filter>Header Files\shapes</Filter>
     </ClInclude>
-    <ClInclude Include="source\Exception.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\WinException.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="source\core\FileManager.h">
       <Filter>Header Files\core</Filter>
     </ClInclude>
     <ClInclude Include="source\shapes\DefaultShapes.h">
       <Filter>Header Files\shapes</Filter>
     </ClInclude>
-    <ClInclude Include="source\core\ShapesFactory.h">
-      <Filter>Header Files\core</Filter>
-    </ClInclude>
     <ClInclude Include="source\core\PluginManager.h">
       <Filter>Header Files\core</Filter>
     </ClInclude>
-    <ClInclude Include="source\interfaces\IPluginLibrary.h">
-      <Filter>Header Files\interfaces</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\shapes\BaseShape.cpp">
-      <Filter>Source Files\shapes</Filter>
-    </ClCompile>
     <ClCompile Include="source\shapes\Circle.cpp">
       <Filter>Source Files\shapes</Filter>
     </ClCompile>
@@ -113,19 +80,10 @@
     <ClCompile Include="source\shapes\Triangle.cpp">
       <Filter>Source Files\shapes</Filter>
     </ClCompile>
-    <ClCompile Include="source\Exception.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\WinException.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\core\FileManager.cpp">
-      <Filter>Source Files\core</Filter>
-    </ClCompile>
-    <ClCompile Include="source\core\ShapesFactory.cpp">
       <Filter>Source Files\core</Filter>
     </ClCompile>
     <ClCompile Include="source\core\PluginManager.cpp">

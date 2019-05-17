@@ -1,8 +1,9 @@
 #pragma once
+#include "../DLLSupport.h"
 #include "../core/ShapesFactory.h"
 #include <string>
 
-class IPluginLibrary
+class __dll IPluginLibrary
 {
 public:
 	virtual ShapeFactoryMethod GetShapeFactory() = 0;

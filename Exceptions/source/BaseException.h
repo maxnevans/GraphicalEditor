@@ -1,10 +1,11 @@
 #pragma once
+#include "DLLSupport.h"
 #include <string>
 
-class _Exception
+class __dll BaseException
 {
 public:
-	_Exception(std::wstring message = L"");
+	BaseException(std::wstring message = L"");
 	virtual std::wstring what() noexcept;
 private:
 
@@ -12,5 +13,3 @@ private:
 	int line;
 	std::wstring filename;
 };
-
-typedef _Exception Exception;

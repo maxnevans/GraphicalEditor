@@ -1,6 +1,7 @@
 #pragma once
+#include "../DLLSupport.h"
 
-class ICursor
+class __dll ICursor
 {
 public:
 	virtual void SelectArea(int x1, int y1, int x2, int y2) = 0;

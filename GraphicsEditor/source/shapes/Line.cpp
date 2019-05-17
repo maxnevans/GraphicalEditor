@@ -6,7 +6,7 @@ void Custom::Line::Redraw(Gdiplus::Graphics* const graphics)
 	graphics->DrawLine(&pen, this->x1, this->y1, this->x2, this->y2);
 }
 
-Custom::BaseShape* Custom::Line::ShapeFactory()
+BaseShape* Custom::Line::ShapeFactory()
 {
 	return new Line();
 }

@@ -14,7 +14,7 @@ void Custom::Triangle::Redraw(Gdiplus::Graphics* const graphics)
 	graphics->DrawPolygon(&pen, points, 3);
 }
 
-Custom::BaseShape* Custom::Triangle::ShapeFactory()
+BaseShape* Custom::Triangle::ShapeFactory()
 {
 	return new Triangle();
 }

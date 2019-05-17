@@ -15,7 +15,7 @@ void Custom::Square::Redraw(Gdiplus::Graphics * const graphics)
 	graphics->DrawRectangle(&pen, rect);
 }
 
-Custom::BaseShape* Custom::Square::ShapeFactory()
+BaseShape* Custom::Square::ShapeFactory()
 {
 	return new Square();
 }

@@ -1,7 +1,8 @@
 #pragma once
 #include <string>
+#include "../DLLSupport.h"
 
-class ISerializable
+class __dll ISerializable
 {
 public:
 	virtual std::wstring SerializeText() = 0;

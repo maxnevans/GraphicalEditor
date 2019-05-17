@@ -13,7 +13,7 @@ void Custom::Circle::Redraw(Gdiplus::Graphics * const graphics)
 	graphics->DrawEllipse(&pen, rect);
 }
 
-Custom::BaseShape* Custom::Circle::ShapeFactory()
+BaseShape* Custom::Circle::ShapeFactory()
 {
 	return new Custom::Circle();
 }

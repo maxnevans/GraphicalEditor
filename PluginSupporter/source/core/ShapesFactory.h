@@ -1,11 +1,12 @@
 #pragma once
 #include <vector>
+#include "../DLLSupport.h"
 #include "../shapes/BaseShape.h"
 
-typedef Custom::BaseShape* (*ShapeFactoryMethod)(void);
+typedef BaseShape* (*ShapeFactoryMethod)(void);
 typedef unsigned int ShapeID;
 
-class ShapesFactory
+class __dll ShapesFactory
 {
 private:
 	typedef struct _RegEntry {
@@ -13,8 +14,8 @@ private:
 		std::wstring name;
 	} RegEntry;
 public:
-	Custom::BaseShape* CreateShape(ShapeID shapeId) const;
-	Custom::BaseShape* CreateShape(std::wstring name) const;
+	BaseShape* CreateShape(ShapeID shapeId) const;
+	BaseShape* CreateShape(std::wstring name) const;
 	ShapeID RegisterShape(const std::wstring name, ShapeFactoryMethod factoryMethod);
 
 private:

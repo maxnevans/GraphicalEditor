@@ -4,10 +4,9 @@
 #include <sstream>
 #include <vector>
 #include <iterator>
-#include "Exception.h"
-#include "WinException.h"
+#include "../../Exceptions/source/Exceptions.h"
 #include "shapes/DefaultShapes.h"
-#include "core/ShapesFactory.h"
+#include "../../PluginSupporter/source/PluginSupporter.h"
 #include "core/FileManager.h"
 #include "core/PluginManager.h"
 
@@ -55,14 +54,14 @@ void AddStretchShape(HWND hWnd, const ShapesFactory* sf);
 void SelectNextShape(HWND hWnd);
 void DeselectShape(HWND hWnd);
 
-std::vector<Custom::BaseShape*> vecShapes;
+std::vector<BaseShape*> vecShapes;
 size_t selectedShapeIndex;
 ShapeID currentShapeID;
 ShapesFactory sf;
 PluginManager* pm;
 std::vector<ShapeID> shapesID;
 Gdiplus::Point points[2];
-Custom::BaseShape* stretchShape;
+BaseShape* stretchShape;
 HWND hInputX, hInputY, hInputWidth, hInputHeight;
 
 int WINAPI wWinMain(
@@ -213,7 +212,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				{
 					size_t tempIndex = selectedShapeIndex;
 					DeselectShape(hWnd);
-					std::vector<Custom::BaseShape*> temp;
+					std::vector<BaseShape*> temp;
 					for (int i = 0; i < vecShapes.size(); i++)
 					{
 						if (i == tempIndex) continue;
@@ -372,7 +371,7 @@ void OnPaint(HWND hWnd)
 	SolidBrush sb(Color::LightGray);
 	graphics.FillRectangle(&sb, 0, 0, WND_WIDTH, WND_HEIGHT);
 
-	for(Custom::BaseShape* shape : vecShapes)
+	for(BaseShape* shape : vecShapes)
 		shape->Redraw(&graphics);
 
 	if (stretchShape)
@@ -386,7 +385,7 @@ void OnPaint(HWND hWnd)
 
 void AddShape(HWND hWnd, const ShapesFactory* sf)
 {
-	Custom::BaseShape* shape = sf->CreateShape(currentShapeID);
+	BaseShape* shape = sf->CreateShape(currentShapeID);
 	shape->SetPoints(points[0].X, points[0].Y, points[1].X, points[1].Y);
 	shape->SetColor(Gdiplus::Color(0xFFFF0000));
 	vecShapes.push_back(shape);

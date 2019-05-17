@@ -7,7 +7,7 @@ namespace Custom {
 	{
 	public:
 		virtual void Redraw(Gdiplus::Graphics* const graphics);
-		static BaseShape* ShapeFactory();
+		static ::BaseShape* ShapeFactory();
 		virtual std::wstring GetName() override;
 
 	public:

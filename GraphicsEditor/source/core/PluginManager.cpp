@@ -1,5 +1,5 @@
 #include "PluginManager.h"
-#include "../Exception.h"
+#include "../../../Exceptions/source/Exceptions.h"
 #include <windows.h>
 #include <assert.h>
 #include <shlwapi.h>
