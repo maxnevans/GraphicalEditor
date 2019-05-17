@@ -1,4 +1,4 @@
 *.vcxproj.user
 .vs/**
-x86/**
-x64/**
+distrib/**
+
