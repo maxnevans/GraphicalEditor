@@ -19,13 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\core\Application.h" />
     <ClInclude Include="source\core\FileManager.h" />
+    <ClInclude Include="source\core\PluginManager.h" />
     <ClInclude Include="source\core\ShapesFactory.h" />
     <ClInclude Include="source\Exception.h" />
     <ClInclude Include="source\interfaces\ICursor.h" />
     <ClInclude Include="source\interfaces\IDeserializable.h" />
     <ClInclude Include="source\interfaces\IDrawable.h" />
+    <ClInclude Include="source\interfaces\IPluginLibrary.h" />
     <ClInclude Include="source\interfaces\ISerializable.h" />
     <ClInclude Include="source\shapes\BaseShape.h" />
     <ClInclude Include="source\shapes\Circle.h" />
@@ -39,8 +40,8 @@
     <ClInclude Include="source\WinException.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\core\Application.cpp" />
     <ClCompile Include="source\core\FileManager.cpp" />
+    <ClCompile Include="source\core\PluginManager.cpp" />
     <ClCompile Include="source\core\ShapesFactory.cpp" />
     <ClCompile Include="source\Exception.cpp" />
     <ClCompile Include="source\Main.cpp" />
@@ -56,6 +57,11 @@
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="resource\main.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Plugin\Plugin.vcxproj">
+      <Project>{619632f3-7ae4-41aa-b1f0-2d5bd5cad965}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -110,20 +116,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)x86\$(Configuration)\</OutDir>
-    <IntDir>x86\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)distrib\x86\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)distrib\x86\$(Configuration)\bs_files\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)x64\$(Configuration)\</OutDir>
-    <IntDir>x64\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)distrib\x64\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)distrib\x64\$(Configuration)\bs_files\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)x64\$(Configuration)\</OutDir>
-    <IntDir>x64\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)distrib\x64\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)distrib\x64\$(Configuration)\bs_files\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)x86\$(Configuration)\</OutDir>
-    <IntDir>x86\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)distrib\x86\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)distrib\x86\$(Configuration)\bs_files\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -137,8 +143,9 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
     </ClCompile>
+    <Link />
     <Link>
-      <AdditionalDependencies>gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gdiplus.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -154,7 +161,7 @@
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gdiplus.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -175,7 +182,8 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gdiplus.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -196,7 +204,8 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gdiplus.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

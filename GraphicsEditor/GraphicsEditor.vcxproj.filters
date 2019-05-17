@@ -72,9 +72,6 @@
     <ClInclude Include="source\WinException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\core\Application.h">
-      <Filter>Header Files\core</Filter>
-    </ClInclude>
     <ClInclude Include="source\core\FileManager.h">
       <Filter>Header Files\core</Filter>
     </ClInclude>
@@ -83,6 +80,12 @@
     </ClInclude>
     <ClInclude Include="source\core\ShapesFactory.h">
       <Filter>Header Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\PluginManager.h">
+      <Filter>Header Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\interfaces\IPluginLibrary.h">
+      <Filter>Header Files\interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -119,13 +122,13 @@
     <ClCompile Include="source\WinException.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\core\Application.cpp">
-      <Filter>Source Files\core</Filter>
-    </ClCompile>
     <ClCompile Include="source\core\FileManager.cpp">
       <Filter>Source Files\core</Filter>
     </ClCompile>
     <ClCompile Include="source\core\ShapesFactory.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\core\PluginManager.cpp">
       <Filter>Source Files\core</Filter>
     </ClCompile>
   </ItemGroup>
