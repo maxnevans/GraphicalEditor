@@ -85,19 +85,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)distrib\x86\$(Configuration)\plugins</OutDir>
-    <IntDir>$(SolutionDir)distrib\x86\$(Configuration)\plugins\$(ProjectName)</IntDir>
+    <IntDir>$(SolutionDir)support_files\x86\$(Configuration)\plugins\$(ProjectName)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)distrib\x86\$(Configuration)\plugins</OutDir>
-    <IntDir>$(SolutionDir)distrib\x86\$(Configuration)\plugins\$(ProjectName)</IntDir>
+    <IntDir>$(SolutionDir)support_files\x86\$(Configuration)\plugins\$(ProjectName)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)distrib\x64\$(Configuration)\plugins</OutDir>
-    <IntDir>$(SolutionDir)distrib\x64\$(Configuration)\plugins\$(ProjectName)</IntDir>
+    <IntDir>$(SolutionDir)support_files\x64\$(Configuration)\plugins\$(ProjectName)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)distrib\x64\$(Configuration)\plugins</OutDir>
-    <IntDir>$(SolutionDir)distrib\x64\$(Configuration)\plugins\$(ProjectName)</IntDir>
+    <IntDir>$(SolutionDir)support_files\x64\$(Configuration)\plugins\$(ProjectName)</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

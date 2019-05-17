@@ -1,4 +1,5 @@
 *.vcxproj.user
 .vs/**
 distrib/**
+support_files/**
 
