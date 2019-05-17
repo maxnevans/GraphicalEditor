@@ -1,9 +1,8 @@
 #pragma once
 #include <vector>
+#include <string>
 #include "../DLLSupport.h"
 #include "../shapes/BaseShape.h"
-#include <vector>
-#include <string>
 
 typedef BaseShape* (*ShapeFactoryMethod)(void);
 typedef unsigned int ShapeID;
