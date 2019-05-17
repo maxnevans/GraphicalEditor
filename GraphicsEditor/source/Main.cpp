@@ -140,7 +140,16 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 		case WM_CREATE:
 			InitUI(hWnd);
-			pm = new PluginManager(L"plugins");
+			try
+			{
+				pm = new PluginManager(L"plugins");
+			}
+			catch (Exception error)
+			{
+				delete pm;
+				pm = nullptr;
+				MessageBox(hWnd, error.what().c_str(), L"Plugin Manager Warning", MB_OK | MB_ICONWARNING);
+			}
 			RegisterShapes(pm, &sf);
 			currentShapeID = MapBID2ShapeID(BID_LINE);
 			points[0].X = -1;
@@ -301,6 +310,9 @@ void RegisterShapes(const PluginManager* pm, ShapesFactory* sf)
 	shapesID.push_back(sf->RegisterShape(Custom::Ellipse::NAME, Custom::Ellipse::ShapeFactory));
 	shapesID.push_back(sf->RegisterShape(Custom::Circle::NAME, Custom::Circle::ShapeFactory));
 	shapesID.push_back(sf->RegisterShape(Custom::Triangle::NAME, Custom::Triangle::ShapeFactory));
+
+	if (!pm)
+		return;
 
 	std::vector<CustomPlugin> plugins = pm->GetPlugins();
 	for (const CustomPlugin plugin : plugins)
