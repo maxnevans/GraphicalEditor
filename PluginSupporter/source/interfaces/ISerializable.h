@@ -1,10 +1,10 @@
 #pragma once
-#include <string>
 #include "../DLLSupport.h"
+#include <string>
 
 class __dll ISerializable
 {
 public:
-	virtual const wchar_t* SerializeText() = 0;
+	virtual void SerializeText(std::wstring& text) = 0;
 };
 

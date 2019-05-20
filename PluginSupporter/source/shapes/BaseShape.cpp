@@ -48,15 +48,15 @@ void BaseShape::SetColor(Gdiplus::ARGB color)
 	this->color = color;
 }
 
-const wchar_t* BaseShape::SerializeText()
+void BaseShape::SerializeText(std::wstring& text)
 {
 	std::wstringstream ss;
 	ss << this->GetName() << " ";
 	ss << "Coordinates: (" << this->x1 << ", " << this->y1 << ") (" << this->x2 << ", " << this->y2 << ") Color: " << this->color;
-	return ss.str().c_str();
+	text = ss.str();
 }
 
-void BaseShape::DeserializeText(const wchar_t* text)
+void BaseShape::DeserializeText(std::wstring text)
 {
 	std::wstringstream ss(text);
 

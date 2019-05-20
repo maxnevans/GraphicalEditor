@@ -15,7 +15,11 @@ void FileManager::SaveText(const std::vector<BaseShape*>* shapes, std::wstring f
 	}
 
 	for (BaseShape* shape : *shapes)
-		file << shape->SerializeText() << std::endl;
+	{
+		std::wstring text;
+		shape->SerializeText(text);
+		file << text << std::endl;
+	}
 
 	file.close();
 }
@@ -48,7 +52,7 @@ void FileManager::LoadText(const ShapesFactory* shapesFactory,
 		std::wstring shapeName = shapeText.substr(0, endOfShapeName);
 
 		BaseShape* shape = shapesFactory->CreateShape(shapeName.c_str());
-		shape->DeserializeText(shapeText.substr(shapeTextStart).c_str());
+		shape->DeserializeText(shapeText.substr(shapeTextStart));
 
 		shapes->push_back(shape);
 

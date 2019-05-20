@@ -1,5 +1,6 @@
 #pragma once
 #include "../../../PluginSupporter/source/core/ShapesFactory.h"
+#include <string>
 #include <vector>
 
 class FileManager
