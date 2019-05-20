@@ -136,11 +136,10 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
 				pm = new PluginManager(L"plugins");
 			}
-			catch (Exception& error)
+			catch (Exception&)
 			{
 				delete pm;
 				pm = nullptr;
-				MessageBox(hWnd, error.what(), L"Plugin Manager Warning", MB_OK | MB_ICONWARNING);
 			}
 			RegisterShapes(pm, &sf);
 			InitUI(hWnd);
