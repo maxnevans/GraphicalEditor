@@ -3,6 +3,7 @@
 #include <gdiplus.h>
 #include <sstream>
 #include <vector>
+#include <map>
 #include <iterator>
 #include "../../Exceptions/source/Exceptions.h"
 #include "shapes/DefaultShapes.h"
@@ -15,25 +16,11 @@
 #define WND_WIDTH		1280
 #define WND_HEIGHT		720
 
-#define BID_LINE		0x0001
-#define BID_TRIANGLE	0x0004
-#define BID_RECTANGLE	0x0002
-#define BID_ELLIPSE		0x0003
-#define BID_CIRCLE		0x0005
-#define BID_SQUARE		0x0006
-#define BID_TESTSHAPE	0x000B
 #define BID_SAVE		0x0007
 #define BID_LOAD		0x0008
 #define BID_DELETE		0x0009
 #define BID_EDIT		0x000A
 
-#define BC_LINE			L"Line"
-#define BC_TRIANGLE		L"Triangle"
-#define BC_RECTANGLE	L"Rectangle"
-#define BC_ELLIPSE		L"Ellipse"
-#define BC_CIRCLE		L"Circle"
-#define BC_SQUARE		L"Square"
-#define BC_TESTSHAPE	L"Test Shape"
 #define BC_SAVE			L"Save"
 #define BC_LOAD			L"Load"
 #define BC_DELETE		L"Delete"
@@ -49,17 +36,21 @@ void DrawButton(HWND, const wchar_t*, int, int, int, int, WORD);
 HWND DrawInput(HWND, int, int, int, int, WORD);
 void OnPaint(HWND hWnd);
 void AddShape(HWND hWnd, const ShapesFactory* sf);
-ShapeID MapBID2ShapeID(DWORD bid);
 void AddStretchShape(HWND hWnd, const ShapesFactory* sf);
 void SelectNextShape(HWND hWnd);
 void DeselectShape(HWND hWnd);
 
+struct ShapeRegStruct {
+	std::wstring name;
+	ShapeID id;
+};
+
+std::map<WORD, ShapeRegStruct> registeredShapes;
 std::vector<BaseShape*> vecShapes;
 size_t selectedShapeIndex;
 ShapeID currentShapeID;
 ShapesFactory sf;
 PluginManager* pm;
-std::vector<ShapeID> shapesID;
 Gdiplus::Point points[2];
 BaseShape* stretchShape;
 HWND hInputX, hInputY, hInputWidth, hInputHeight;
@@ -141,7 +132,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		switch (uMsg)
 		{
 		case WM_CREATE:
-			InitUI(hWnd);
 			try
 			{
 				pm = new PluginManager(L"plugins");
@@ -153,7 +143,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				MessageBox(hWnd, error.what(), L"Plugin Manager Warning", MB_OK | MB_ICONWARNING);
 			}
 			RegisterShapes(pm, &sf);
-			currentShapeID = MapBID2ShapeID(BID_LINE);
+			InitUI(hWnd);
+			currentShapeID = registeredShapes[0xA0].id;
 			points[0].X = -1;
 			points[0].Y = -1;
 			points[1].X = -1;
@@ -196,16 +187,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case WM_COMMAND:
 			switch (LOWORD(wParam))
 			{
-			case BID_LINE:
-			case BID_RECTANGLE:
-			case BID_SQUARE:
-			case BID_ELLIPSE:
-			case BID_CIRCLE:
-			case BID_TRIANGLE:
-			case BID_TESTSHAPE:
-				currentShapeID = MapBID2ShapeID(static_cast<DWORD>(wParam));
-				SetFocus(hWnd);
-				break;
 			case BID_SAVE:
 				DeselectShape(hWnd);
 				FileManager::SaveText(&vecShapes, L"test.txt");
@@ -234,28 +215,33 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				SetFocus(hWnd);
 				break;
 			case BID_EDIT:
-				wchar_t buffer[256];
+				{
+					wchar_t buffer[256];
 
-				GetWindowText(hInputX, buffer, 256);
-				int x = std::stoi(buffer);
+					GetWindowText(hInputX, buffer, 256);
+					int x = std::stoi(buffer);
 
-				GetWindowText(hInputWidth, buffer, 256);
-				int width = std::stoi(buffer);
+					GetWindowText(hInputWidth, buffer, 256);
+					int width = std::stoi(buffer);
 
-				GetWindowText(hInputY, buffer, 256);
-				int y = std::stoi(buffer);
+					GetWindowText(hInputY, buffer, 256);
+					int y = std::stoi(buffer);
 
-				GetWindowText(hInputHeight, buffer, 256);
-				int height = std::stoi(buffer);
+					GetWindowText(hInputHeight, buffer, 256);
+					int height = std::stoi(buffer);
 
-				int x1 = x;
-				int y1 = y;
-				int x2 = x + width;
-				int y2 = y + height;
-				vecShapes[selectedShapeIndex]->SetPoints(x1, y1, x2, y2);
-				InvalidateRect(hWnd, NULL, FALSE);
-				SetFocus(hWnd);
+					int x1 = x;
+					int y1 = y;
+					int x2 = x + width;
+					int y2 = y + height;
+					vecShapes[selectedShapeIndex]->SetPoints(x1, y1, x2, y2);
+					InvalidateRect(hWnd, NULL, FALSE);
+					SetFocus(hWnd);
+				}
 				break;
+			default:
+				currentShapeID = registeredShapes[LOWORD(wParam)].id;
+				//SetFocus(hWnd);
 			}
 			break;
 		case WM_KEYDOWN:
@@ -286,86 +272,61 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 void InitUI(HWND hWnd)
 {
-	DrawButton(hWnd, BC_LINE, B_WIDTH * 0, 0, B_WIDTH, B_HEIGHT, BID_LINE);
-	DrawButton(hWnd, BC_RECTANGLE, B_WIDTH * 1, 0, B_WIDTH, B_HEIGHT, BID_RECTANGLE);
-	DrawButton(hWnd, BC_ELLIPSE, B_WIDTH * 2, 0, B_WIDTH, B_HEIGHT, BID_ELLIPSE);
-	DrawButton(hWnd, BC_TRIANGLE, B_WIDTH * 3, 0, B_WIDTH, B_HEIGHT, BID_TRIANGLE);
-	DrawButton(hWnd, BC_CIRCLE, B_WIDTH * 4, 0, B_WIDTH, B_HEIGHT, BID_CIRCLE);
-	DrawButton(hWnd, BC_SQUARE, B_WIDTH * 5, 0, B_WIDTH, B_HEIGHT, BID_SQUARE);
+	HMENU mainMenu = CreateMenu();
+	HMENU shapesMenu = CreateMenu();
+	AppendMenu(mainMenu, MF_POPUP, reinterpret_cast<UINT_PTR>(shapesMenu), L"Shapes");
+	SetMenu(hWnd, mainMenu);
+	for (std::map<WORD, ShapeRegStruct>::iterator shape = registeredShapes.begin(); shape != registeredShapes.end(); shape++)
+		AppendMenu(shapesMenu, MF_STRING, shape->first, shape->second.name.c_str());
+
+
+	hInputX = DrawInput(hWnd, B_WIDTH * 0, 0, B_WIDTH, B_HEIGHT, NULL);
+	hInputY = DrawInput(hWnd, B_WIDTH * 1, 0, B_WIDTH, B_HEIGHT, NULL);
+	hInputWidth = DrawInput(hWnd, B_WIDTH * 2, 0, B_WIDTH, B_HEIGHT, NULL);
+	hInputHeight = DrawInput(hWnd, B_WIDTH * 3, 0, B_WIDTH, B_HEIGHT, NULL);	
+	DrawButton(hWnd, BC_EDIT, B_WIDTH * 4, 0, B_WIDTH, B_HEIGHT, BID_EDIT);
+	DrawButton(hWnd, BC_DELETE, B_WIDTH * 5, 0, B_WIDTH, B_HEIGHT, BID_DELETE);
 	DrawButton(hWnd, BC_SAVE, B_WIDTH * 6, 0, B_WIDTH, B_HEIGHT, BID_SAVE);
 	DrawButton(hWnd, BC_LOAD, B_WIDTH * 7, 0, B_WIDTH, B_HEIGHT, BID_LOAD);
-	DrawButton(hWnd, BC_DELETE, B_WIDTH * 8, 0, B_WIDTH, B_HEIGHT, BID_DELETE);
-	DrawButton(hWnd, BC_EDIT, B_WIDTH * 4, B_HEIGHT, B_WIDTH, B_HEIGHT, BID_EDIT);
-	DrawButton(hWnd, BC_TESTSHAPE, B_WIDTH * 5, B_HEIGHT, B_WIDTH, B_HEIGHT, BID_TESTSHAPE);
-
-	hInputX = DrawInput(hWnd, B_WIDTH * 0, B_HEIGHT, B_WIDTH, B_HEIGHT, NULL);
-	hInputY = DrawInput(hWnd, B_WIDTH * 1, B_HEIGHT, B_WIDTH, B_HEIGHT, NULL);
-	hInputWidth = DrawInput(hWnd, B_WIDTH * 2, B_HEIGHT, B_WIDTH, B_HEIGHT, NULL);
-	hInputHeight = DrawInput(hWnd, B_WIDTH * 3, B_HEIGHT, B_WIDTH, B_HEIGHT, NULL);
 }
 
 void RegisterShapes(const PluginManager* pm, ShapesFactory* sf)
 {
-	shapesID.push_back(sf->RegisterShape(Custom::Line::NAME, Custom::Line::ShapeFactory));
-	shapesID.push_back(sf->RegisterShape(Custom::Rectangle::NAME, Custom::Rectangle::ShapeFactory));
-	shapesID.push_back(sf->RegisterShape(Custom::Square::NAME, Custom::Square::ShapeFactory));
-	shapesID.push_back(sf->RegisterShape(Custom::Ellipse::NAME, Custom::Ellipse::ShapeFactory));
-	shapesID.push_back(sf->RegisterShape(Custom::Circle::NAME, Custom::Circle::ShapeFactory));
-	shapesID.push_back(sf->RegisterShape(Custom::Triangle::NAME, Custom::Triangle::ShapeFactory));
+	const WORD startPadding = 0xA0;
+	WORD BID = startPadding;
+	registeredShapes[BID++] = { Custom::Line::NAME, sf->RegisterShape(Custom::Line::NAME, Custom::Line::ShapeFactory) };
+	registeredShapes[BID++] = { Custom::Rectangle::NAME, sf->RegisterShape(Custom::Rectangle::NAME, Custom::Rectangle::ShapeFactory) };
+	registeredShapes[BID++] = { Custom::Square::NAME, sf->RegisterShape(Custom::Square::NAME, Custom::Square::ShapeFactory) };
+	registeredShapes[BID++] = { Custom::Ellipse::NAME, sf->RegisterShape(Custom::Ellipse::NAME, Custom::Ellipse::ShapeFactory) };
+	registeredShapes[BID++] = { Custom::Circle::NAME, sf->RegisterShape(Custom::Circle::NAME, Custom::Circle::ShapeFactory) };
+	registeredShapes[BID++] = { Custom::Triangle::NAME, sf->RegisterShape(Custom::Triangle::NAME, Custom::Triangle::ShapeFactory) };
 
 	if (!pm)
 		return;
 
 	std::vector<CustomPlugin> plugins = pm->GetPlugins();
 	for (const CustomPlugin plugin : plugins)
-		shapesID.push_back(sf->RegisterShape(plugin.name.c_str(), plugin.factory));
+		registeredShapes[BID++] = { plugin.name, sf->RegisterShape(plugin.name.c_str(), plugin.factory) };
 }
 
-void DrawButton(
-	HWND hWnd, 
-	const wchar_t* caption, 
-	int x, int y, 
-	int width, int height, 
-	WORD id
-)
+void DrawButton(HWND hWnd, const wchar_t* caption, int x, int y, int width, int height, WORD id)
 {
-	HWND hTest = CreateWindow(
-		L"Button",
-		caption,
-		WS_CHILD | WS_VISIBLE,
-		x, y,
-		width, height,
-		hWnd,
-		reinterpret_cast<HMENU>(id),
-		GetModuleHandle(NULL),
-		NULL
-	);
+	HWND hTest = CreateWindow(L"Button", caption, WS_CHILD | WS_VISIBLE, x, y, width, height,
+		hWnd, reinterpret_cast<HMENU>(id), GetModuleHandle(NULL), NULL);
 	if (!hTest)
 		throw WinException(L"button");
 }
 
 HWND DrawInput(HWND hParent, int x, int y, int width, int height, WORD id)
 {
-	HWND hInput = CreateWindow
-	(
-		L"Edit",
-		NULL, 
-		WS_CHILD | WS_VISIBLE,
-		x, y, 
-		width, height,
-		hParent,
-		reinterpret_cast<HMENU>(id),
-		GetModuleHandle(NULL),
-		NULL
-	);
+	HWND hInput = CreateWindow(L"Edit",	NULL, WS_CHILD | WS_VISIBLE, x, y, width, height, 
+		hParent, reinterpret_cast<HMENU>(id), GetModuleHandle(NULL), NULL);
 	if (!hInput)
 		throw WinException(L"input");
 
 	LONG styles = GetWindowLong(hInput, GWL_STYLE);
 	SetWindowLong(hInput, GWL_STYLE, styles | ES_NUMBER);
-
 	SendMessage(hInput, EM_SETLIMITTEXT, 4, 0);
-
 	EnableWindow(hInput, FALSE);
 
 	return hInput;
@@ -405,30 +366,6 @@ void AddShape(HWND hWnd, const ShapesFactory* sf)
 	shape->SetPoints(points[0].X, points[0].Y, points[1].X, points[1].Y);
 	shape->SetColor(0xFFFF0000);
 	vecShapes.push_back(shape);
-}
-
-ShapeID MapBID2ShapeID(DWORD bid)
-{
-	switch (bid)
-	{
-	case BID_LINE:
-		return 0;
-	case BID_RECTANGLE:
-		return 1;
-	case BID_SQUARE:
-		return 2;
-	case BID_ELLIPSE:
-		return 3;
-	case BID_CIRCLE:
-		return 4;
-	case BID_TRIANGLE:
-		return 5;
-	case BID_TESTSHAPE:
-		return 6;
-	default:
-		throw Exception(std::wstring(L"Shape with BID = " + std::to_wstring(bid) + L" is not implemented").c_str());
-	}
-	return -1;
 }
 
 void AddStretchShape(HWND hWnd, const ShapesFactory* sf)
