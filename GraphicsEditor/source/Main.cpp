@@ -10,6 +10,7 @@
 #include "../../PluginSupporter/source/PluginSupporter.h"
 #include "core/FileManager.h"
 #include "core/PluginManager.h"
+#include "core/UserShapeManager.h"
 
 #define WND_CLASS		L"MainWindow"
 #define WND_NAME		L"Graphical Editor"
@@ -22,6 +23,7 @@
 #define BID_EDIT		0x000A
 #define BID_SAVESHAPE	0x000B
 #define BID_USERSHAPE	0x000C
+#define REG_INDEX_START	0x00A0
 
 #define BC_SAVE			L"Save"
 #define BC_LOAD			L"Load"
@@ -34,7 +36,9 @@
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void InitUI(HWND);
-void RegisterShapes(const PluginManager* pm, ShapesFactory* sf);
+void RegisterCoreShapes(WORD& regIndex, ShapesFactory* sf);
+void RegisterPluginShapes(WORD& regIndex, const PluginManager* pm, ShapesFactory* sf);
+void RegisterUserShapes(WORD& regIndex, const UserShapeManager* usm, ShapesFactory* sf);
 void DrawButton(HWND, const wchar_t*, int, int, int, int, WORD);
 HWND DrawInput(HWND, int, int, int, int, WORD);
 void OnPaint(HWND hWnd);
@@ -43,9 +47,16 @@ void AddStretchShape(HWND hWnd, const ShapesFactory* sf);
 void SelectNextShape(HWND hWnd);
 void DeselectShape(HWND hWnd);
 
+enum ShapeType {
+	CORE,
+	PLUGIN,
+	USER
+};
+
 struct ShapeRegStruct {
 	std::wstring name;
 	ShapeID id;
+	ShapeType type;
 };
 
 std::map<WORD, ShapeRegStruct> registeredShapes;
@@ -54,6 +65,7 @@ size_t selectedShapeIndex;
 ShapeID currentShapeID;
 ShapesFactory sf;
 PluginManager* pm;
+UserShapeManager* usm;
 Gdiplus::Point points[2];
 BaseShape* stretchShape;
 HWND hInputX, hInputY, hInputWidth, hInputHeight;
@@ -126,24 +138,40 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		switch (uMsg)
 		{
 		case WM_CREATE:
-			try
 			{
-				pm = new PluginManager(L"plugins");
+				WORD regIndex = REG_INDEX_START;
+				RegisterCoreShapes(regIndex, &sf);
+				try
+				{
+					pm = new PluginManager(L"plugins");
+					RegisterPluginShapes(regIndex, pm, &sf);
+				}
+				catch (Exception&)
+				{
+					delete pm;
+					pm = nullptr;
+				}
+
+				try
+				{
+					usm = new UserShapeManager(&sf, L"user");
+					RegisterUserShapes(regIndex, usm, &sf);
+				}
+				catch (Exception&)
+				{
+					delete usm;
+					usm = nullptr;
+					throw;
+				}
+				InitUI(hWnd);
+				currentShapeID = registeredShapes[0xA0].id;
+				points[0].X = -1;
+				points[0].Y = -1;
+				points[1].X = -1;
+				points[1].Y = -1;
+				stretchShape = nullptr;
+				selectedShapeIndex = -1;
 			}
-			catch (Exception&)
-			{
-				delete pm;
-				pm = nullptr;
-			}
-			RegisterShapes(pm, &sf);
-			InitUI(hWnd);
-			currentShapeID = registeredShapes[0xA0].id;
-			points[0].X = -1;
-			points[0].Y = -1;
-			points[1].X = -1;
-			points[1].Y = -1;
-			stretchShape = nullptr;
-			selectedShapeIndex = -1;
 			break;
 		case WM_PAINT:
 			OnPaint(hWnd);
@@ -234,7 +262,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				break;
 			case BID_SAVESHAPE:
 				DeselectShape(hWnd);
-				FileManager::SaveText(&vecShapes, L"shapes/user_shape.txt");
+				FileManager::SaveText(&vecShapes, L"user\\some.ushp");
 				SetFocus(hWnd);
 				break;
 			default:
@@ -273,12 +301,37 @@ void InitUI(HWND hWnd)
 
 	HMENU shapesMenu = CreateMenu();
 	AppendMenu(mainMenu, MF_POPUP, reinterpret_cast<UINT_PTR>(shapesMenu), L"Shapes");
-	for (std::map<WORD, ShapeRegStruct>::iterator shape = registeredShapes.begin(); shape != registeredShapes.end(); shape++)
-		AppendMenu(shapesMenu, MF_STRING, shape->first, shape->second.name.c_str());
-
+	int countCore = 0;
+	HMENU pluginsMenu = CreateMenu();
+	AppendMenu(mainMenu, MF_POPUP, reinterpret_cast<UINT_PTR>(pluginsMenu), L"Plugins");
+	int countPlugins = 0;
 	HMENU userShapesMenu = CreateMenu();
 	AppendMenu(mainMenu, MF_POPUP, reinterpret_cast<UINT_PTR>(userShapesMenu), L"User Shapes");
-	AppendMenu(userShapesMenu, MF_STRING, BID_USERSHAPE, L"User Shape");
+	int countUserShapes = 0;
+	for (std::map<WORD, ShapeRegStruct>::iterator shape = registeredShapes.begin(); shape != registeredShapes.end(); shape++)
+	{
+		switch (shape->second.type)
+		{
+			case ShapeType::CORE:
+				countCore++;
+				AppendMenu(shapesMenu, MF_STRING, shape->first, shape->second.name.c_str());
+				break;
+			case ShapeType::PLUGIN:
+				countPlugins++;
+				AppendMenu(pluginsMenu, MF_STRING, shape->first, shape->second.name.c_str());
+				break;
+			case ShapeType::USER:
+				countUserShapes++;
+				AppendMenu(userShapesMenu, MF_STRING, shape->first, shape->second.name.c_str());
+				break;
+		}
+	}
+	if (!countCore)
+		EnableMenuItem(mainMenu, 0, MF_BYPOSITION | MF_DISABLED);
+	if (!countPlugins)
+		EnableMenuItem(mainMenu, 1, MF_BYPOSITION | MF_DISABLED);
+	if (!countUserShapes)
+		EnableMenuItem(mainMenu, 2, MF_BYPOSITION | MF_DISABLED);
 
 	SetMenu(hWnd, mainMenu);
 
@@ -293,23 +346,36 @@ void InitUI(HWND hWnd)
 	DrawButton(hWnd, BC_SAVESHAPE, B_WIDTH * 8, 0, B_WIDTH, B_HEIGHT, BID_SAVESHAPE);
 }
 
-void RegisterShapes(const PluginManager* pm, ShapesFactory* sf)
+void RegisterCoreShapes(WORD& regIndex, ShapesFactory* sf)
 {
-	const WORD startPadding = 0xA0;
-	WORD BID = startPadding;
-	registeredShapes[BID++] = { Custom::Line::NAME, sf->RegisterShape(Custom::Line::NAME, Custom::Line::CreateFactoryFunctor()) };
-	registeredShapes[BID++] = { Custom::Rectangle::NAME, sf->RegisterShape(Custom::Rectangle::NAME, Custom::Rectangle::CreateFactoryFunctor()) };
-	registeredShapes[BID++] = { Custom::Square::NAME, sf->RegisterShape(Custom::Square::NAME, Custom::Square::CreateFactoryFunctor()) };
-	registeredShapes[BID++] = { Custom::Ellipse::NAME, sf->RegisterShape(Custom::Ellipse::NAME, Custom::Ellipse::CreateFactoryFunctor()) };
-	registeredShapes[BID++] = { Custom::Circle::NAME, sf->RegisterShape(Custom::Circle::NAME, Custom::Circle::CreateFactoryFunctor()) };
-	registeredShapes[BID++] = { Custom::Triangle::NAME, sf->RegisterShape(Custom::Triangle::NAME, Custom::Triangle::CreateFactoryFunctor()) };
+	registeredShapes[regIndex++] = { Custom::Line::NAME, 
+		sf->RegisterShape(Custom::Line::NAME, Custom::Line::CreateFactoryFunctor()), ShapeType::CORE };
+	registeredShapes[regIndex++] = { Custom::Rectangle::NAME, 
+		sf->RegisterShape(Custom::Rectangle::NAME, Custom::Rectangle::CreateFactoryFunctor()), ShapeType::CORE };
+	registeredShapes[regIndex++] = { Custom::Square::NAME, 
+		sf->RegisterShape(Custom::Square::NAME, Custom::Square::CreateFactoryFunctor()), ShapeType::CORE };
+	registeredShapes[regIndex++] = { Custom::Ellipse::NAME, 
+		sf->RegisterShape(Custom::Ellipse::NAME, Custom::Ellipse::CreateFactoryFunctor()), ShapeType::CORE };
+	registeredShapes[regIndex++] = { Custom::Circle::NAME, 
+		sf->RegisterShape(Custom::Circle::NAME, Custom::Circle::CreateFactoryFunctor()), ShapeType::CORE };
+	registeredShapes[regIndex++] = { Custom::Triangle::NAME, 
+		sf->RegisterShape(Custom::Triangle::NAME, Custom::Triangle::CreateFactoryFunctor()), ShapeType::CORE };
+}
 
-	if (!pm)
-		return;
-
+void RegisterPluginShapes(WORD& regIndex, const PluginManager* pm, ShapesFactory* sf)
+{
 	std::vector<CustomPlugin> plugins = pm->GetPlugins();
 	for (const CustomPlugin plugin : plugins)
-		registeredShapes[BID++] = { plugin.name, sf->RegisterShape(plugin.name.c_str(), plugin.factory) };
+		registeredShapes[regIndex++] = { plugin.name, 
+			sf->RegisterShape(plugin.name.c_str(), plugin.factory), ShapeType::PLUGIN };
+}
+
+void RegisterUserShapes(WORD& regIndex, const UserShapeManager* usm, ShapesFactory* sf)
+{
+	std::vector<UserShape> userShapes = usm->GetUserShapes();
+	for (const UserShape userShape : userShapes)
+		registeredShapes[regIndex++] = {userShape.name, 
+			sf->RegisterShape(userShape.name.c_str(), userShape.factoryFunctor), ShapeType::USER };
 }
 
 void DrawButton(HWND hWnd, const wchar_t* caption, int x, int y, int width, int height, WORD id)

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="source\core\FileManager.h" />
     <ClInclude Include="source\core\PluginManager.h" />
+    <ClInclude Include="source\core\UserShapeManager.h" />
     <ClInclude Include="source\shapes\Circle.h" />
     <ClInclude Include="source\shapes\ComplexShape.h" />
     <ClInclude Include="source\shapes\DefaultShapes.h" />
@@ -34,6 +35,7 @@
   <ItemGroup>
     <ClCompile Include="source\core\FileManager.cpp" />
     <ClCompile Include="source\core\PluginManager.cpp" />
+    <ClCompile Include="source\core\UserShapeManager.cpp" />
     <ClCompile Include="source\Main.cpp" />
     <ClCompile Include="source\shapes\Circle.cpp" />
     <ClCompile Include="source\shapes\ComplexShape.cpp" />

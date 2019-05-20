@@ -60,6 +60,9 @@
     <ClInclude Include="source\shapes\ComplexShape.h">
       <Filter>Header Files\shapes</Filter>
     </ClInclude>
+    <ClInclude Include="source\core\UserShapeManager.h">
+      <Filter>Header Files\core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\shapes\Circle.cpp">
@@ -94,6 +97,9 @@
     </ClCompile>
     <ClCompile Include="source\shapes\ComplexShape.cpp">
       <Filter>Source Files\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="source\core\UserShapeManager.cpp">
+      <Filter>Source Files\core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
