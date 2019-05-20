@@ -57,6 +57,9 @@
     <ClInclude Include="source\core\PluginManager.h">
       <Filter>Header Files\core</Filter>
     </ClInclude>
+    <ClInclude Include="source\shapes\ComplexShape.h">
+      <Filter>Header Files\shapes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\shapes\Circle.cpp">
@@ -88,6 +91,9 @@
     </ClCompile>
     <ClCompile Include="source\core\PluginManager.cpp">
       <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="source\shapes\ComplexShape.cpp">
+      <Filter>Source Files\shapes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
