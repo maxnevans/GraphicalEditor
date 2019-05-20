@@ -8,12 +8,17 @@ void Custom::Ellipse::Redraw(Gdiplus::Graphics* const graphics)
 	graphics->DrawEllipse(&pen, rect);
 }
 
-BaseShape* Custom::Ellipse::ShapeFactory()
+IShapeFactoryFunctor* Custom::Ellipse::CreateFactoryFunctor()
 {
-	return new Ellipse();
+	return new EllipseFactoryFunctor();
 }
 
 const wchar_t* Custom::Ellipse::GetName()
 {
 	return this->NAME;
+}
+
+BaseShape* Custom::Ellipse::EllipseFactoryFunctor::operator()()
+{
+	return new Ellipse();
 }

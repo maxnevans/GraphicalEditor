@@ -8,7 +8,7 @@
 typedef struct _CustomPlugin
 {
 	std::wstring name;
-	ShapeFactoryMethod factory;
+	IShapeFactoryFunctor* factory;
 }  CustomPlugin, * PCustomPlugin;
 
 class PluginManager

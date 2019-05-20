@@ -1,9 +1,9 @@
 #include "Plugin.h"
 #include "TestShape.h"
 
-ShapeFactoryMethod Plugin::GetShapeFactory()
+IShapeFactoryFunctor* Plugin::GetShapeFactory()
 {
-	return TestShape::ShapeFactory;
+	return TestShape::CreateFactoryFunctor();
 }
 
 const wchar_t* Plugin::GetShapeName()

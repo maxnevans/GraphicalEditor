@@ -14,12 +14,17 @@ void Custom::Triangle::Redraw(Gdiplus::Graphics* const graphics)
 	graphics->DrawPolygon(&pen, points, 3);
 }
 
-BaseShape* Custom::Triangle::ShapeFactory()
+IShapeFactoryFunctor* Custom::Triangle::CreateFactoryFunctor()
 {
-	return new Triangle();
+	return new TriangleFactoryFunctor();
 }
 
 const wchar_t* Custom::Triangle::GetName()
 {
 	return this->NAME;
+}
+
+BaseShape* Custom::Triangle::TriangleFactoryFunctor::operator()()
+{
+	return new Triangle();
 }

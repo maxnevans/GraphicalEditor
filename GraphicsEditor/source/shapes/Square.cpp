@@ -15,12 +15,17 @@ void Custom::Square::Redraw(Gdiplus::Graphics * const graphics)
 	graphics->DrawRectangle(&pen, rect);
 }
 
-BaseShape* Custom::Square::ShapeFactory()
+IShapeFactoryFunctor* Custom::Square::CreateFactoryFunctor()
 {
-	return new Square();
+	return new SquareFactoryFunctor();
 }
 
 const wchar_t* Custom::Square::GetName()
 {
 	return this->NAME;
+}
+
+BaseShape* Custom::Square::SquareFactoryFunctor::operator()()
+{
+	return new Square();
 }

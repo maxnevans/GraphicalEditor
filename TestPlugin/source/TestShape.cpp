@@ -21,12 +21,17 @@ void TestShape::Redraw(Gdiplus::Graphics* const graphics)
 	graphics->DrawString(test.c_str(), -1, &font, layout, &sf, &brush);
 }
 
-::BaseShape* TestShape::ShapeFactory()
+IShapeFactoryFunctor* TestShape::CreateFactoryFunctor()
 {
-	return new TestShape();
+	return new TestFactoryFunctor();
 }
 
 const wchar_t* TestShape::GetName()
 {
 	return this->NAME;
+}
+
+BaseShape* TestShape::TestFactoryFunctor::operator()()
+{
+	return new TestShape();
 }

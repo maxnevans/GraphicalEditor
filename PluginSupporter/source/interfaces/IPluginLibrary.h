@@ -5,7 +5,7 @@
 class __dll IPluginLibrary
 {
 public:
-	virtual ShapeFactoryMethod GetShapeFactory() = 0;
+	virtual IShapeFactoryFunctor* GetShapeFactory() = 0;
 	virtual const wchar_t* GetShapeName() = 0;
 
 public:

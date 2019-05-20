@@ -6,12 +6,17 @@ void Custom::Line::Redraw(Gdiplus::Graphics* const graphics)
 	graphics->DrawLine(&pen, this->x1, this->y1, this->x2, this->y2);
 }
 
-BaseShape* Custom::Line::ShapeFactory()
+IShapeFactoryFunctor* Custom::Line::CreateFactoryFunctor()
 {
-	return new Line();
+	return new LineFactoryFunctor();
 }
 
 const wchar_t* Custom::Line::GetName()
 {
 	return this->NAME;
+}
+
+BaseShape* Custom::Line::LineFactoryFunctor::operator()()
+{
+	return new Line();
 }

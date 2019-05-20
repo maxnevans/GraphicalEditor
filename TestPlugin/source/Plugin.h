@@ -6,7 +6,7 @@ class Plugin
 	public IPluginLibrary
 {
 public:
-	virtual ShapeFactoryMethod GetShapeFactory();
-	virtual const wchar_t* GetShapeName();
+	virtual IShapeFactoryFunctor* GetShapeFactory() override;
+	virtual const wchar_t* GetShapeName() override;
 };
 

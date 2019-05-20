@@ -24,6 +24,7 @@
     <ClCompile Include="source\shapes\BaseShape.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\core\IShapeFactoryFunctor.h" />
     <ClInclude Include="source\core\ShapesFactory.h" />
     <ClInclude Include="source\DLLSupport.h" />
     <ClInclude Include="source\interfaces\ICursor.h" />

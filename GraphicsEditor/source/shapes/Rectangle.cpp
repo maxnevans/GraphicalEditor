@@ -9,12 +9,17 @@ void Custom::Rectangle::Redraw(Gdiplus::Graphics* const graphics)
 	graphics->DrawRectangle(&pen, rect);
 }
 
-BaseShape* Custom::Rectangle::ShapeFactory()
+IShapeFactoryFunctor* Custom::Rectangle::CreateFactoryFunctor()
 {
-	return new Rectangle();
+	return new RectangleFactoryFunctor();
 }
 
 const wchar_t* Custom::Rectangle::GetName()
 {
 	return this->NAME;
+}
+
+BaseShape* Custom::Rectangle::RectangleFactoryFunctor::operator()()
+{
+	return new Rectangle();
 }

@@ -71,5 +71,8 @@
     <ClInclude Include="source\LightWindows.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\core\IShapeFactoryFunctor.h">
+      <Filter>Header Files\core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

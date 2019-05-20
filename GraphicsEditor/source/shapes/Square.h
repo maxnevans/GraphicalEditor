@@ -5,9 +5,18 @@ namespace Custom {
 	class Square :
 		public Rectangle
 	{
+	private:
+		class SquareFactoryFunctor
+			:
+			public IShapeFactoryFunctor
+		{
+		public:
+			virtual BaseShape* operator()() override;
+		};
+
 	public:
 		virtual void Redraw(Gdiplus::Graphics* const graphics);
-		static ::BaseShape* ShapeFactory();
+		static IShapeFactoryFunctor* CreateFactoryFunctor();
 		virtual const wchar_t* GetName() override;
 
 	public:

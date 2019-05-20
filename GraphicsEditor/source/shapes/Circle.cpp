@@ -13,12 +13,17 @@ void Custom::Circle::Redraw(Gdiplus::Graphics * const graphics)
 	graphics->DrawEllipse(&pen, rect);
 }
 
-BaseShape* Custom::Circle::ShapeFactory()
+IShapeFactoryFunctor* Custom::Circle::CreateFactoryFunctor()
 {
-	return new Custom::Circle();
+	return new CircleFactoryFunctor();
 }
 
 const wchar_t* Custom::Circle::GetName()
 {
 	return this->NAME;
+}
+
+BaseShape* Custom::Circle::CircleFactoryFunctor::operator()()
+{
+	return new Circle();
 }

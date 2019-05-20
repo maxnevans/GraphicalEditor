@@ -20,11 +20,14 @@
 #define BID_LOAD		0x0008
 #define BID_DELETE		0x0009
 #define BID_EDIT		0x000A
+#define BID_SAVESHAPE	0x000B
+#define BID_USERSHAPE	0x000C
 
 #define BC_SAVE			L"Save"
 #define BC_LOAD			L"Load"
 #define BC_DELETE		L"Delete"
 #define BC_EDIT			L"Edit"
+#define BC_SAVESHAPE	L"Save as Shape"
 
 #define B_WIDTH			140
 #define B_HEIGHT		30
@@ -85,17 +88,10 @@ int WINAPI wWinMain(
 		RECT rDesk;
 		GetWindowRect(GetDesktopWindow(), &rDesk);
 
-		HWND hWnd = CreateWindowW(
-			WND_CLASS,
-			WND_NAME,
+		HWND hWnd = CreateWindowW(WND_CLASS, WND_NAME, 
 			WS_VISIBLE | WS_OVERLAPPEDWINDOW & ~WS_SIZEBOX & ~WS_MAXIMIZEBOX | WS_CLIPCHILDREN,
 			(rDesk.right - WND_WIDTH) / 2, (rDesk.bottom - WND_HEIGHT) / 2,
-			WND_WIDTH, WND_HEIGHT,
-			NULL,
-			NULL,
-			hInstance,
-			0
-		);
+			WND_WIDTH, WND_HEIGHT, NULL, NULL, hInstance, 0);
 		if (hWnd == NULL) 
 			throw WinException(L"create window");
 		UpdateWindow(hWnd);
@@ -122,8 +118,6 @@ int WINAPI wWinMain(
 		exit(-1);
 	}
 }
-
-int tab_pressed = 0;
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -238,9 +232,13 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					SetFocus(hWnd);
 				}
 				break;
+			case BID_SAVESHAPE:
+				DeselectShape(hWnd);
+				FileManager::SaveText(&vecShapes, L"shapes/user_shape.txt");
+				SetFocus(hWnd);
+				break;
 			default:
 				currentShapeID = registeredShapes[LOWORD(wParam)].id;
-				//SetFocus(hWnd);
 			}
 			break;
 		case WM_KEYDOWN:
@@ -272,33 +270,39 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 void InitUI(HWND hWnd)
 {
 	HMENU mainMenu = CreateMenu();
+
 	HMENU shapesMenu = CreateMenu();
 	AppendMenu(mainMenu, MF_POPUP, reinterpret_cast<UINT_PTR>(shapesMenu), L"Shapes");
-	SetMenu(hWnd, mainMenu);
 	for (std::map<WORD, ShapeRegStruct>::iterator shape = registeredShapes.begin(); shape != registeredShapes.end(); shape++)
 		AppendMenu(shapesMenu, MF_STRING, shape->first, shape->second.name.c_str());
 
+	HMENU userShapesMenu = CreateMenu();
+	AppendMenu(mainMenu, MF_POPUP, reinterpret_cast<UINT_PTR>(userShapesMenu), L"User Shapes");
+	AppendMenu(userShapesMenu, MF_STRING, BID_USERSHAPE, L"User Shape");
+
+	SetMenu(hWnd, mainMenu);
 
 	hInputX = DrawInput(hWnd, B_WIDTH * 0, 0, B_WIDTH, B_HEIGHT, NULL);
 	hInputY = DrawInput(hWnd, B_WIDTH * 1, 0, B_WIDTH, B_HEIGHT, NULL);
 	hInputWidth = DrawInput(hWnd, B_WIDTH * 2, 0, B_WIDTH, B_HEIGHT, NULL);
-	hInputHeight = DrawInput(hWnd, B_WIDTH * 3, 0, B_WIDTH, B_HEIGHT, NULL);	
+	hInputHeight = DrawInput(hWnd, B_WIDTH * 3, 0, B_WIDTH, B_HEIGHT, NULL);
 	DrawButton(hWnd, BC_EDIT, B_WIDTH * 4, 0, B_WIDTH, B_HEIGHT, BID_EDIT);
 	DrawButton(hWnd, BC_DELETE, B_WIDTH * 5, 0, B_WIDTH, B_HEIGHT, BID_DELETE);
 	DrawButton(hWnd, BC_SAVE, B_WIDTH * 6, 0, B_WIDTH, B_HEIGHT, BID_SAVE);
 	DrawButton(hWnd, BC_LOAD, B_WIDTH * 7, 0, B_WIDTH, B_HEIGHT, BID_LOAD);
+	DrawButton(hWnd, BC_SAVESHAPE, B_WIDTH * 8, 0, B_WIDTH, B_HEIGHT, BID_SAVESHAPE);
 }
 
 void RegisterShapes(const PluginManager* pm, ShapesFactory* sf)
 {
 	const WORD startPadding = 0xA0;
 	WORD BID = startPadding;
-	registeredShapes[BID++] = { Custom::Line::NAME, sf->RegisterShape(Custom::Line::NAME, Custom::Line::ShapeFactory) };
-	registeredShapes[BID++] = { Custom::Rectangle::NAME, sf->RegisterShape(Custom::Rectangle::NAME, Custom::Rectangle::ShapeFactory) };
-	registeredShapes[BID++] = { Custom::Square::NAME, sf->RegisterShape(Custom::Square::NAME, Custom::Square::ShapeFactory) };
-	registeredShapes[BID++] = { Custom::Ellipse::NAME, sf->RegisterShape(Custom::Ellipse::NAME, Custom::Ellipse::ShapeFactory) };
-	registeredShapes[BID++] = { Custom::Circle::NAME, sf->RegisterShape(Custom::Circle::NAME, Custom::Circle::ShapeFactory) };
-	registeredShapes[BID++] = { Custom::Triangle::NAME, sf->RegisterShape(Custom::Triangle::NAME, Custom::Triangle::ShapeFactory) };
+	registeredShapes[BID++] = { Custom::Line::NAME, sf->RegisterShape(Custom::Line::NAME, Custom::Line::CreateFactoryFunctor()) };
+	registeredShapes[BID++] = { Custom::Rectangle::NAME, sf->RegisterShape(Custom::Rectangle::NAME, Custom::Rectangle::CreateFactoryFunctor()) };
+	registeredShapes[BID++] = { Custom::Square::NAME, sf->RegisterShape(Custom::Square::NAME, Custom::Square::CreateFactoryFunctor()) };
+	registeredShapes[BID++] = { Custom::Ellipse::NAME, sf->RegisterShape(Custom::Ellipse::NAME, Custom::Ellipse::CreateFactoryFunctor()) };
+	registeredShapes[BID++] = { Custom::Circle::NAME, sf->RegisterShape(Custom::Circle::NAME, Custom::Circle::CreateFactoryFunctor()) };
+	registeredShapes[BID++] = { Custom::Triangle::NAME, sf->RegisterShape(Custom::Triangle::NAME, Custom::Triangle::CreateFactoryFunctor()) };
 
 	if (!pm)
 		return;
