@@ -34,6 +34,20 @@
 #define B_WIDTH			140
 #define B_HEIGHT		30
 
+enum ShapeType 
+{
+	CORE,
+	PLUGIN,
+	USER
+};
+
+struct ShapeRegStruct 
+{
+	std::wstring name;
+	ShapeID id;
+	ShapeType type;
+};
+
 LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void InitUI(HWND);
 void RegisterCoreShapes(WORD& regIndex, ShapesFactory* sf);
@@ -46,18 +60,6 @@ void AddShape(HWND hWnd, const ShapesFactory* sf);
 void AddStretchShape(HWND hWnd, const ShapesFactory* sf);
 void SelectNextShape(HWND hWnd);
 void DeselectShape(HWND hWnd);
-
-enum ShapeType {
-	CORE,
-	PLUGIN,
-	USER
-};
-
-struct ShapeRegStruct {
-	std::wstring name;
-	ShapeID id;
-	ShapeType type;
-};
 
 std::map<WORD, ShapeRegStruct> registeredShapes;
 std::vector<BaseShape*> vecShapes;
@@ -161,7 +163,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				{
 					delete usm;
 					usm = nullptr;
-					throw;
 				}
 				InitUI(hWnd);
 				currentShapeID = registeredShapes[0xA0].id;
