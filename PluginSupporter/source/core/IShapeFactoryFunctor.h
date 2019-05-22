@@ -6,4 +6,5 @@ class __dll IShapeFactoryFunctor
 {
 public:
 	virtual BaseShape* operator()() = 0;
+	virtual ~IShapeFactoryFunctor() = default;
 };
