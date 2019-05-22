@@ -65,13 +65,17 @@ public:
 	}
 	inline virtual void SetColor(Gdiplus::ARGB color)
 	{
-		this->color = color;
+		this->SetColorSafe(color);
 	}
 	virtual void SerializeText(std::wstring& text) const override;
 	virtual void DeserializeText(std::wstring text) override;
 
 protected:
 	void SetPointsSafe(int x1, int y1, int x2, int y2);
+	inline void SetColorSafe(Gdiplus::ARGB color)
+	{
+		this->color = color;
+	}
 
 protected:
 	int x, y, width, height;

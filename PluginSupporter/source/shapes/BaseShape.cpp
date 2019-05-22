@@ -29,27 +29,27 @@ void BaseShape::DeserializeText(std::wstring text)
 {
 	std::wstringstream ss(text);
 
+	int x1;
 	ss.ignore(wcslen(L"Coordinates: ("));
-	ss >> this->x1;
+	ss >> x1;
 	ss.ignore(2);
-	ss >> this->y1;
+	int y1;
+	ss >> y1;
 	ss.ignore(wcslen(L") ("));
-	ss >> this->x2;
+	int x2;
+	ss >> x2;
 	ss.ignore(2);
-	ss >> this->y2;
+	int y2;
+	ss >> y2;
 	ss.ignore(wcslen(L") Color: "));
-
 	Gdiplus::ARGB colorValue;
 	ss >> colorValue;
-	this->color = colorValue;
 
 	if (ss.fail())
 		throw Exception(L"undefined text format");
 
-	this->x = this->x1 < this->x2 ? this->x1 : this->x2;
-	this->y = this->y1 < this->y2 ? this->y1 : this->y2;
-	this->width = this->x1 < this->x2 ? this->x2 - this->x1 : this->x1 - this->x2;
-	this->height = this->y1 < this->y2 ? this->y2 - this->y1 : this->y1 - this->y2;
+	this->SetPoints(x1, y1, x2, y2);
+	this->SetColor(colorValue);
 }
 
 void BaseShape::SetPointsSafe(int x1, int y1, int x2, int y2)
