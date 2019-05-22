@@ -139,153 +139,150 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		switch (uMsg)
 		{
-		case WM_CREATE:
-			{
-				WORD regIndex = REG_INDEX_START;
-				RegisterCoreShapes(regIndex, &sf);
-				try
+			case WM_CREATE:
 				{
-					pm = new PluginManager(L"plugins");
-					RegisterPluginShapes(regIndex, pm, &sf);
-				}
-				catch (Exception&)
-				{
-					delete pm;
-					pm = nullptr;
-				}
-
-				try
-				{
+					WORD regIndex = REG_INDEX_START;
+					RegisterCoreShapes(regIndex, &sf);
+					try
+					{
+						pm = new PluginManager(L"plugins");
+						RegisterPluginShapes(regIndex, pm, &sf);
+					}
+					catch (Exception&)
+					{
+						delete pm;
+						pm = nullptr;
+					}
 					usm = new UserShapeManager(&sf, L"user");
 					RegisterUserShapes(regIndex, usm, &sf);
+					InitUI(hWnd);
+					currentShapeID = registeredShapes[0xA0].id;
+					points[0].X = -1;
+					points[0].Y = -1;
+					points[1].X = -1;
+					points[1].Y = -1;
+					stretchShape = nullptr;
+					selectedShapeIndex = -1;
 				}
-				catch (Exception&)
-				{
-					delete usm;
-					usm = nullptr;
-				}
-				InitUI(hWnd);
-				currentShapeID = registeredShapes[0xA0].id;
+				break;
+			case WM_PAINT:
+				OnPaint(hWnd);
+				break;
+			case WM_ERASEBKGND:
+				return TRUE;
+			case WM_LBUTTONDOWN:
+				points[0].X = GET_X_LPARAM(lParam);
+				points[0].Y = GET_Y_LPARAM(lParam);
+				AddStretchShape(hWnd, &sf);
+				break;
+			case WM_LBUTTONUP:
+				points[1].X = GET_X_LPARAM(lParam);
+				points[1].Y = GET_Y_LPARAM(lParam);
+				AddShape(hWnd, &sf);
+				InvalidateRect(hWnd, NULL, FALSE);
+
 				points[0].X = -1;
 				points[0].Y = -1;
 				points[1].X = -1;
 				points[1].Y = -1;
+				delete stretchShape;
 				stretchShape = nullptr;
-				selectedShapeIndex = -1;
-			}
-			break;
-		case WM_PAINT:
-			OnPaint(hWnd);
-			break;
-		case WM_ERASEBKGND:
-			return TRUE;
-		case WM_LBUTTONDOWN:
-			points[0].X = GET_X_LPARAM(lParam);
-			points[0].Y = GET_Y_LPARAM(lParam);
-			AddStretchShape(hWnd, &sf);
-			break;
-		case WM_LBUTTONUP:
-			points[1].X = GET_X_LPARAM(lParam);
-			points[1].Y = GET_Y_LPARAM(lParam);
-			AddShape(hWnd, &sf);
-			InvalidateRect(hWnd, NULL, FALSE);
-
-			points[0].X = -1;
-			points[0].Y = -1;
-			points[1].X = -1;
-			points[1].Y = -1;
-			delete stretchShape;
-			stretchShape = nullptr;
-			break;
-		case WM_MOUSEMOVE:
-			if (points[0].X != -1 && points[0].Y)
-			{
-				points[1].X = GET_X_LPARAM(lParam);
-				points[1].Y = GET_Y_LPARAM(lParam);
-				stretchShape->SetPoints(points[0].X, points[0].Y, points[1].X, points[1].Y);
-				InvalidateRect(hWnd, NULL, FALSE);
-			}
-			break;
-		case WM_COMMAND:
-			switch (LOWORD(wParam))
-			{
-			case BID_SAVE:
-				DeselectShape(hWnd);
-				FileManager::SaveText(&vecShapes, L"test.txt");
-				SetFocus(hWnd);
 				break;
-			case BID_LOAD:
-				DeselectShape(hWnd);
-				vecShapes.clear();
-				FileManager::LoadText(&sf, &vecShapes, L"test.txt");
-				InvalidateRect(hWnd, NULL, FALSE);
-				SetFocus(hWnd);
-				break;
-			case BID_DELETE:
-				if (selectedShapeIndex != -1)
+			case WM_MOUSEMOVE:
+				if (points[0].X != -1 && points[0].Y)
 				{
-					size_t tempIndex = selectedShapeIndex;
-					DeselectShape(hWnd);
-					std::vector<BaseShape*> temp;
-					for (unsigned int i = 0; i < vecShapes.size(); i++)
-					{
-						if (i == tempIndex) continue;
-						temp.push_back(vecShapes[i]);
-					}
-					vecShapes = temp;
-				}
-				SetFocus(hWnd);
-				break;
-			case BID_EDIT:
-				{
-					wchar_t buffer[256];
-
-					GetWindowText(hInputX, buffer, 256);
-					int x = std::stoi(buffer);
-
-					GetWindowText(hInputWidth, buffer, 256);
-					int width = std::stoi(buffer);
-
-					GetWindowText(hInputY, buffer, 256);
-					int y = std::stoi(buffer);
-
-					GetWindowText(hInputHeight, buffer, 256);
-					int height = std::stoi(buffer);
-
-					int x1 = x;
-					int y1 = y;
-					int x2 = x + width;
-					int y2 = y + height;
-					vecShapes[selectedShapeIndex]->SetPoints(x1, y1, x2, y2);
+					points[1].X = GET_X_LPARAM(lParam);
+					points[1].Y = GET_Y_LPARAM(lParam);
+					stretchShape->SetPoints(points[0].X, points[0].Y, points[1].X, points[1].Y);
 					InvalidateRect(hWnd, NULL, FALSE);
-					SetFocus(hWnd);
 				}
 				break;
-			case BID_SAVESHAPE:
-				DeselectShape(hWnd);
-				FileManager::SaveText(&vecShapes, L"user\\some.ushp");
-				SetFocus(hWnd);
+			case WM_COMMAND:
+				switch (LOWORD(wParam))
+				{
+					case BID_SAVE:
+						{
+							DeselectShape(hWnd);
+							std::vector<const BaseShape*> vecShapesConst(vecShapes.begin(), vecShapes.end());
+							FileManager::SaveText(&vecShapesConst, L"test.txt");
+							SetFocus(hWnd);
+						}
+						break;
+					case BID_LOAD:
+						DeselectShape(hWnd);
+						vecShapes.clear();
+						FileManager::LoadText(&sf, &vecShapes, L"test.txt");
+						InvalidateRect(hWnd, NULL, FALSE);
+						SetFocus(hWnd);
+						break;
+					case BID_DELETE:
+						if (selectedShapeIndex != -1)
+						{
+							size_t tempIndex = selectedShapeIndex;
+							DeselectShape(hWnd);
+							std::vector<BaseShape*> temp;
+							for (unsigned int i = 0; i < vecShapes.size(); i++)
+							{
+								if (i == tempIndex) continue;
+								temp.push_back(vecShapes[i]);
+							}
+							vecShapes = temp;
+						}
+						SetFocus(hWnd);
+						break;
+					case BID_EDIT:
+						{
+							wchar_t buffer[256];
+
+							GetWindowText(hInputX, buffer, 256);
+							int x = std::stoi(buffer);
+
+							GetWindowText(hInputWidth, buffer, 256);
+							int width = std::stoi(buffer);
+
+							GetWindowText(hInputY, buffer, 256);
+							int y = std::stoi(buffer);
+
+							GetWindowText(hInputHeight, buffer, 256);
+							int height = std::stoi(buffer);
+
+							int x1 = x;
+							int y1 = y;
+							int x2 = x + width;
+							int y2 = y + height;
+							vecShapes[selectedShapeIndex]->SetPoints(x1, y1, x2, y2);
+							InvalidateRect(hWnd, NULL, FALSE);
+							SetFocus(hWnd);
+						}
+						break;
+					case BID_SAVESHAPE:
+						{
+							DeselectShape(hWnd);
+							std::vector<const BaseShape*> vecShapesConst(vecShapes.begin(), vecShapes.end());
+							usm->SaveUserShape(L"some", L"Super user shape", vecShapesConst);
+							SetFocus(hWnd);
+						}
+						break;
+					default:
+						currentShapeID = registeredShapes[LOWORD(wParam)].id;
+				}
 				break;
-			default:
-				currentShapeID = registeredShapes[LOWORD(wParam)].id;
-			}
-			break;
-		case WM_KEYDOWN:
-			if (wParam == VK_TAB)
-			{
-				SelectNextShape(hWnd);
-			}
-			else if (wParam == VK_ESCAPE)
-			{
-				DeselectShape(hWnd);
-			}
-			break;
-		case WM_CLOSE:
-			DestroyWindow(hWnd);
-			return 0;
-		case WM_DESTROY:
-			PostQuitMessage(0);
-			return 0;
+			case WM_KEYDOWN:
+				if (wParam == VK_TAB)
+				{
+					SelectNextShape(hWnd);
+				}
+				else if (wParam == VK_ESCAPE)
+				{
+					DeselectShape(hWnd);
+				}
+				break;
+			case WM_CLOSE:
+				DestroyWindow(hWnd);
+				return 0;
+			case WM_DESTROY:
+				PostQuitMessage(0);
+				return 0;
 		}
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
