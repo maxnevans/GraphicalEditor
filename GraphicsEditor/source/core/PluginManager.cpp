@@ -47,6 +47,8 @@ PluginManager::PluginManager(std::wstring directory)
 		delete pluginLib;
 
 	} while (FindNextFile(hPlugin, &fd));
+
+	FindClose(hPlugin);
 }
 
 const std::vector<CustomPlugin> PluginManager::GetPlugins() const
