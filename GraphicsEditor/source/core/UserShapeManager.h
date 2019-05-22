@@ -15,9 +15,17 @@ class UserShapeManager
 {
 public:
 	UserShapeManager(const ShapesFactory* sf, std::wstring directory);
-	const std::vector<UserShape> GetUserShapes() const;
+	void SaveUserShape(std::wstring fileName, std::wstring shapeName, const std::vector<const BaseShape*>& shapes) const;
+	inline const std::vector<UserShape> GetUserShapes() const
+	{
+		return this->userShapes;
+	}
+
+private:
+	static void NormalizeShapes(std::vector<BaseShape*>& shapes);
 
 private:
 	std::vector<UserShape> userShapes;
+	std::wstring directory;
 };
 
