@@ -5,6 +5,6 @@
 class __dll ISerializable
 {
 public:
-	virtual void SerializeText(std::wstring& text) = 0;
+	virtual void SerializeText(std::wstring& text) const = 0;
 };
 

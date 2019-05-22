@@ -67,7 +67,7 @@ public:
 	{
 		this->color = color;
 	}
-	virtual void SerializeText(std::wstring& text) override;
+	virtual void SerializeText(std::wstring& text) const override;
 	virtual void DeserializeText(std::wstring text) override;
 
 protected:

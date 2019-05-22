@@ -17,7 +17,7 @@ BaseShape::BaseShape()
 	this->height = 0;
 }
 
-void BaseShape::SerializeText(std::wstring& text)
+void BaseShape::SerializeText(std::wstring& text) const
 {
 	std::wstringstream ss;
 	ss << this->GetName() << " ";
