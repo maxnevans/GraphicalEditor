@@ -13,13 +13,3 @@ void Custom::Triangle::Redraw(Gdiplus::Graphics* const graphics)
 
 	graphics->DrawPolygon(&pen, points, 3);
 }
-
-IShapeFactoryFunctor* Custom::Triangle::CreateFactoryFunctor()
-{
-	return new TriangleFactoryFunctor();
-}
-
-BaseShape* Custom::Triangle::TriangleFactoryFunctor::operator()()
-{
-	return new Triangle();
-}

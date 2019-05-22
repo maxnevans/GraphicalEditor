@@ -20,13 +20,3 @@ void TestShape::Redraw(Gdiplus::Graphics* const graphics)
 	graphics->DrawRectangle(&pen, layout);
 	graphics->DrawString(test.c_str(), -1, &font, layout, &sf, &brush);
 }
-
-IShapeFactoryFunctor* TestShape::CreateFactoryFunctor()
-{
-	return new TestFactoryFunctor();
-}
-
-BaseShape* TestShape::TestFactoryFunctor::operator()()
-{
-	return new TestShape();
-}

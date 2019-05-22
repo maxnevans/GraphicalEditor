@@ -14,13 +14,3 @@ void Custom::Square::Redraw(Gdiplus::Graphics * const graphics)
 
 	graphics->DrawRectangle(&pen, rect);
 }
-
-IShapeFactoryFunctor* Custom::Square::CreateFactoryFunctor()
-{
-	return new SquareFactoryFunctor();
-}
-
-BaseShape* Custom::Square::SquareFactoryFunctor::operator()()
-{
-	return new Square();
-}

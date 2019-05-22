@@ -11,12 +11,18 @@ namespace Custom {
 			public IShapeFactoryFunctor
 		{
 		public:
-			virtual BaseShape* operator()() override;
+			inline virtual BaseShape* operator()() override
+			{
+				return new Square();
+			}
 		};
 
 	public:
 		virtual void Redraw(Gdiplus::Graphics* const graphics);
-		static IShapeFactoryFunctor* CreateFactoryFunctor();
+		inline static IShapeFactoryFunctor* CreateFactoryFunctor()
+		{
+			return new SquareFactoryFunctor();
+		}
 		inline virtual const wchar_t* GetName() const override
 		{
 			return this->NAME;

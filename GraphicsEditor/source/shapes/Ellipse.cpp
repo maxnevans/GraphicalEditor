@@ -7,14 +7,3 @@ void Custom::Ellipse::Redraw(Gdiplus::Graphics* const graphics)
 	Gdiplus::Rect rect(this->x, this->y, this->width, this->height);
 	graphics->DrawEllipse(&pen, rect);
 }
-
-IShapeFactoryFunctor* Custom::Ellipse::CreateFactoryFunctor()
-{
-	return new EllipseFactoryFunctor();
-}
-
-
-BaseShape* Custom::Ellipse::EllipseFactoryFunctor::operator()()
-{
-	return new Ellipse();
-}

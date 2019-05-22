@@ -8,13 +8,3 @@ void Custom::Rectangle::Redraw(Gdiplus::Graphics* const graphics)
 	Gdiplus::Rect rect(this->x, this->y, this->width, this->height);
 	graphics->DrawRectangle(&pen, rect);
 }
-
-IShapeFactoryFunctor* Custom::Rectangle::CreateFactoryFunctor()
-{
-	return new RectangleFactoryFunctor();
-}
-
-BaseShape* Custom::Rectangle::RectangleFactoryFunctor::operator()()
-{
-	return new Rectangle();
-}

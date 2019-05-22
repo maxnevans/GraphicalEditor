@@ -10,11 +10,17 @@ private:
 		public IShapeFactoryFunctor
 	{
 	public:
-		virtual BaseShape* operator()() override;
+		inline virtual BaseShape* operator()() override
+		{
+			return new TestShape();
+		}
 	};
 public:
 	virtual void Redraw(Gdiplus::Graphics* const graphics) override;
-	static IShapeFactoryFunctor* CreateFactoryFunctor();
+	inline static IShapeFactoryFunctor* CreateFactoryFunctor()
+	{
+		return new TestFactoryFunctor();
+	}
 	inline virtual const wchar_t* GetName() const override
 	{
 		return this->NAME;
