@@ -3,7 +3,7 @@
 #include <fstream>
 #include <sstream>
 
-void FileManager::SaveText(const std::vector<BaseShape*>* shapes, std::wstring filename)
+void FileManager::SaveText(const std::vector<const BaseShape*>* shapes, std::wstring filename)
 {
 	std::wofstream file(filename);
 
@@ -14,7 +14,7 @@ void FileManager::SaveText(const std::vector<BaseShape*>* shapes, std::wstring f
 		throw Exception(ss.str().c_str());
 	}
 
-	for (BaseShape* shape : *shapes)
+	for (const BaseShape* shape : *shapes)
 	{
 		std::wstring text;
 		shape->SerializeText(text);

@@ -6,7 +6,7 @@
 class FileManager
 {
 public:
-	static void SaveText(const std::vector<BaseShape*>* shapes, std::wstring filename);
+	static void SaveText(const std::vector<const BaseShape*>* shapes, std::wstring filename);
 	static void LoadText(const ShapesFactory* shapesFactory, std::vector<BaseShape*>* shapes, std::wstring filename);
 };
 
