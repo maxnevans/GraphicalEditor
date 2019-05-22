@@ -13,10 +13,6 @@ IShapeFactoryFunctor* Custom::Ellipse::CreateFactoryFunctor()
 	return new EllipseFactoryFunctor();
 }
 
-const wchar_t* Custom::Ellipse::GetName()
-{
-	return this->NAME;
-}
 
 BaseShape* Custom::Ellipse::EllipseFactoryFunctor::operator()()
 {

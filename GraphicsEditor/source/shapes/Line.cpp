@@ -11,11 +11,6 @@ IShapeFactoryFunctor* Custom::Line::CreateFactoryFunctor()
 	return new LineFactoryFunctor();
 }
 
-const wchar_t* Custom::Line::GetName()
-{
-	return this->NAME;
-}
-
 BaseShape* Custom::Line::LineFactoryFunctor::operator()()
 {
 	return new Line();

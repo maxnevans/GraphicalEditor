@@ -20,11 +20,6 @@ IShapeFactoryFunctor* Custom::Square::CreateFactoryFunctor()
 	return new SquareFactoryFunctor();
 }
 
-const wchar_t* Custom::Square::GetName()
-{
-	return this->NAME;
-}
-
 BaseShape* Custom::Square::SquareFactoryFunctor::operator()()
 {
 	return new Square();

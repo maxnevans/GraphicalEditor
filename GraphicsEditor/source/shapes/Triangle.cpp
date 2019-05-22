@@ -19,11 +19,6 @@ IShapeFactoryFunctor* Custom::Triangle::CreateFactoryFunctor()
 	return new TriangleFactoryFunctor();
 }
 
-const wchar_t* Custom::Triangle::GetName()
-{
-	return this->NAME;
-}
-
 BaseShape* Custom::Triangle::TriangleFactoryFunctor::operator()()
 {
 	return new Triangle();

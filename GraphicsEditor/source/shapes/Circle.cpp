@@ -18,11 +18,6 @@ IShapeFactoryFunctor* Custom::Circle::CreateFactoryFunctor()
 	return new CircleFactoryFunctor();
 }
 
-const wchar_t* Custom::Circle::GetName()
-{
-	return this->NAME;
-}
-
 BaseShape* Custom::Circle::CircleFactoryFunctor::operator()()
 {
 	return new Circle();

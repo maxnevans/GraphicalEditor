@@ -15,7 +15,10 @@ private:
 public:
 	virtual void Redraw(Gdiplus::Graphics* const graphics) override;
 	static IShapeFactoryFunctor* CreateFactoryFunctor();
-	virtual const wchar_t* GetName() override;
+	inline virtual const wchar_t* GetName() const override
+	{
+		return this->NAME;
+	}
 
 public:
 	static constexpr const wchar_t* NAME = L"TestShape";

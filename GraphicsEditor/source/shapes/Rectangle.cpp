@@ -14,11 +14,6 @@ IShapeFactoryFunctor* Custom::Rectangle::CreateFactoryFunctor()
 	return new RectangleFactoryFunctor();
 }
 
-const wchar_t* Custom::Rectangle::GetName()
-{
-	return this->NAME;
-}
-
 BaseShape* Custom::Rectangle::RectangleFactoryFunctor::operator()()
 {
 	return new Rectangle();
