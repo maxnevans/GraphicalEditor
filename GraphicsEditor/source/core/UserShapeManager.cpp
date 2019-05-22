@@ -90,14 +90,14 @@ void UserShapeManager::NormalizeShapes(std::vector<BaseShape*>& shapes)
 
 	for (BaseShape* shape : shapes)
 	{
-		int x = shape->GetX();
-		int y = shape->GetY();
-		int width = shape->GetWidth();
-		int height = shape->GetHeight();
+		int x1, y1, x2, y2;
+		shape->GetPoints(x1, y1, x2, y2);
 
-		x -= minX;
-		y -= minY;
+		x1 -= minX;
+		x2 -= minX;
+		y1 -= minY;
+		y2 -= minY;
 
-		shape->SetPoints(x, y, x + width, y + height);
+		shape->SetPoints(x1, y1, x2, y2);
 	}
 }

@@ -45,18 +45,16 @@ void ComplexShape::SetPoints(int x1, int y1, int x2, int y2)
 
 	for (size_t i = 0; i < this->shapes.size(); i++)
 	{
-		
-		float shapeX = this->shapes[i]->GetX();
-		float shapeY = this->shapes[i]->GetY();
-		float shapeWidth = this->shapes[i]->GetWidth();
-		float shapeHeight = this->shapes[i]->GetHeight();
+		int shapeX1, shapeY1, shapeX2, shapeY2;
+		this->shapes[i]->GetPoints(shapeX1, shapeY1, shapeX2, shapeY2);
 
-		shapeX = shapeX * distortionX + this->x;
-		shapeY = shapeY * distortionY + this->y;
-		shapeWidth *= distortionX;
-		shapeHeight *= distortionY;
 
-		this->gfxShapes[i]->SetPoints(shapeX, shapeY, shapeX + shapeWidth, shapeY + shapeHeight);
+		shapeX1 = shapeX1 * distortionX + this->x;
+		shapeY1 = shapeY1 * distortionY + this->y;
+		shapeX2 = shapeX2 * distortionX + this->x;
+		shapeY2 = shapeY2 * distortionY + this->y;
+
+		this->gfxShapes[i]->SetPoints(shapeX1, shapeY1, shapeX2, shapeY2);
 	}
 }
 

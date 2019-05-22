@@ -70,7 +70,7 @@ PluginManager* pm;
 UserShapeManager* usm;
 Gdiplus::Point points[2];
 BaseShape* stretchShape;
-HWND hInputX, hInputY, hInputWidth, hInputHeight;
+HWND hInputX1, hInputY1, hInputX2, hInputY2;
 
 int WINAPI wWinMain(
 	_In_ HINSTANCE hInstance,
@@ -234,22 +234,18 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						{
 							wchar_t buffer[256];
 
-							GetWindowText(hInputX, buffer, 256);
-							int x = std::stoi(buffer);
+							GetWindowText(hInputX1, buffer, 256);
+							int x1 = std::stoi(buffer);
 
-							GetWindowText(hInputWidth, buffer, 256);
-							int width = std::stoi(buffer);
+							GetWindowText(hInputX2, buffer, 256);
+							int x2 = std::stoi(buffer);
 
-							GetWindowText(hInputY, buffer, 256);
-							int y = std::stoi(buffer);
+							GetWindowText(hInputY1, buffer, 256);
+							int y1 = std::stoi(buffer);
 
-							GetWindowText(hInputHeight, buffer, 256);
-							int height = std::stoi(buffer);
+							GetWindowText(hInputY2, buffer, 256);
+							int y2 = std::stoi(buffer);
 
-							int x1 = x;
-							int y1 = y;
-							int x2 = x + width;
-							int y2 = y + height;
 							vecShapes[selectedShapeIndex]->SetPoints(x1, y1, x2, y2);
 							InvalidateRect(hWnd, NULL, FALSE);
 							SetFocus(hWnd);
@@ -275,6 +271,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				else if (wParam == VK_ESCAPE)
 				{
 					DeselectShape(hWnd);
+					SetFocus(hWnd);
 				}
 				break;
 			case WM_CLOSE:
@@ -333,10 +330,10 @@ void InitUI(HWND hWnd)
 
 	SetMenu(hWnd, mainMenu);
 
-	hInputX = DrawInput(hWnd, B_WIDTH * 0, 0, B_WIDTH, B_HEIGHT, NULL);
-	hInputY = DrawInput(hWnd, B_WIDTH * 1, 0, B_WIDTH, B_HEIGHT, NULL);
-	hInputWidth = DrawInput(hWnd, B_WIDTH * 2, 0, B_WIDTH, B_HEIGHT, NULL);
-	hInputHeight = DrawInput(hWnd, B_WIDTH * 3, 0, B_WIDTH, B_HEIGHT, NULL);
+	hInputX1 = DrawInput(hWnd, B_WIDTH * 0, 0, B_WIDTH, B_HEIGHT, NULL);
+	hInputY1 = DrawInput(hWnd, B_WIDTH * 1, 0, B_WIDTH, B_HEIGHT, NULL);
+	hInputX2 = DrawInput(hWnd, B_WIDTH * 2, 0, B_WIDTH, B_HEIGHT, NULL);
+	hInputY2 = DrawInput(hWnd, B_WIDTH * 3, 0, B_WIDTH, B_HEIGHT, NULL);
 	DrawButton(hWnd, BC_EDIT, B_WIDTH * 4, 0, B_WIDTH, B_HEIGHT, BID_EDIT);
 	DrawButton(hWnd, BC_DELETE, B_WIDTH * 5, 0, B_WIDTH, B_HEIGHT, BID_DELETE);
 	DrawButton(hWnd, BC_SAVE, B_WIDTH * 6, 0, B_WIDTH, B_HEIGHT, BID_SAVE);
@@ -452,20 +449,17 @@ void SelectNextShape(HWND hWnd)
 		vecShapes[selectedShapeIndex]->SetColor(Gdiplus::Color::Green);
 		InvalidateRect(hWnd, NULL, FALSE);
 
-		wchar_t buffer[256];
-		wsprintf(buffer, L"%d", vecShapes[selectedShapeIndex]->GetX());
-		SetWindowText(hInputX, buffer);
-		wsprintf(buffer, L"%d", vecShapes[selectedShapeIndex]->GetY());
-		SetWindowText(hInputY, buffer);
-		wsprintf(buffer, L"%d", vecShapes[selectedShapeIndex]->GetWidth());
-		SetWindowText(hInputWidth, buffer);
-		wsprintf(buffer, L"%d", vecShapes[selectedShapeIndex]->GetHeight());
-		SetWindowText(hInputHeight, buffer);
+		int x1, y1, x2, y2;
+		vecShapes[selectedShapeIndex]->GetPoints(x1, y1, x2, y2);
+		SetWindowText(hInputX1, std::to_wstring(x1).c_str());
+		SetWindowText(hInputY1, std::to_wstring(y1).c_str());
+		SetWindowText(hInputX2, std::to_wstring(x2).c_str());
+		SetWindowText(hInputY2, std::to_wstring(y2).c_str());
 
-		EnableWindow(hInputX, TRUE);
-		EnableWindow(hInputY, TRUE);
-		EnableWindow(hInputWidth, TRUE);
-		EnableWindow(hInputHeight, TRUE);
+		EnableWindow(hInputX1, TRUE);
+		EnableWindow(hInputY1, TRUE);
+		EnableWindow(hInputX2, TRUE);
+		EnableWindow(hInputY2, TRUE);
 	}
 }
 
@@ -478,14 +472,14 @@ void DeselectShape(HWND hWnd)
 		InvalidateRect(hWnd, NULL, FALSE);
 		selectedShapeIndex = -1;
 
-		SetWindowText(hInputX, NULL);
-		SetWindowText(hInputY, NULL);
-		SetWindowText(hInputWidth, NULL);
-		SetWindowText(hInputHeight, NULL);
+		SetWindowText(hInputX1, NULL);
+		SetWindowText(hInputY1, NULL);
+		SetWindowText(hInputX2, NULL);
+		SetWindowText(hInputY2, NULL);
 
-		EnableWindow(hInputX, FALSE);
-		EnableWindow(hInputY, FALSE);
-		EnableWindow(hInputWidth, FALSE);
-		EnableWindow(hInputHeight, FALSE);
+		EnableWindow(hInputX1, FALSE);
+		EnableWindow(hInputY1, FALSE);
+		EnableWindow(hInputX2, FALSE);
+		EnableWindow(hInputY2, FALSE);
 	}
 }
