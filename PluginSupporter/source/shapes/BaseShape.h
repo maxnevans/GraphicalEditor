@@ -38,17 +38,12 @@ public:
 	{
 		return this->y;
 	}
-	inline virtual void SetXAnchor(int x)
+	inline virtual void GetPoints(int& x1, int& y1, int& x2, int& y2) const
 	{
-		this->x = x;
-		this->x1 = x;
-		this->x2 = this->width + x;
-	}
-	inline virtual void SetYAnchor(int y)
-	{
-		this->y = y;
-		this->y1 = y;
-		this->y2 = y + this->height;
+		x1 = this->x1;
+		y1 = this->y1;
+		x2 = this->x2;
+		y2 = this->y2;
 	}
 	inline virtual int GetWidth() const
 	{
