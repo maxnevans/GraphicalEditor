@@ -4,48 +4,17 @@
 #include <string>
 
 
-void BaseShape::SelectPoint(int x, int y)
+BaseShape::BaseShape()
 {
-}
-
-void BaseShape::SelectArea(int x1, int y1, int x2, int y2)
-{
-	this->SetPointsSafe(x1, y1, x2, y2);
-}
-
-void BaseShape::SetPoints(int x1, int y1, int x2, int y2)
-{
-	this->SetPointsSafe(x1, y1, x2, y2);
-}
-
-int BaseShape::GetX()
-{
-	return this->x;
-}
-
-int BaseShape::GetY()
-{
-	return this->y;
-}
-
-int BaseShape::GetWidth()
-{
-	return this->width;
-}
-
-int BaseShape::GetHeight()
-{
-	return this->height;
-}
-
-Gdiplus::ARGB BaseShape::GetColor()
-{
-	return this->color;
-}
-
-void BaseShape::SetColor(Gdiplus::ARGB color)
-{
-	this->color = color;
+	this->x = 0;
+	this->y = 0;
+	this->x1 = 0;
+	this->y1 = 0;
+	this->x2 = 0;
+	this->y2 = 0;
+	this->color = 0;
+	this->width = 0;
+	this->height = 0;
 }
 
 void BaseShape::SerializeText(std::wstring& text)
