@@ -16,6 +16,10 @@ private:
 		}
 	};
 public:
+	inline virtual BaseShape* Clone() const override
+	{
+		return new TestShape(*this);
+	}
 	virtual void Redraw(Gdiplus::Graphics* const graphics) override;
 	inline static IShapeFactoryFunctor* CreateFactoryFunctor()
 	{

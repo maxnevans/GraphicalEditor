@@ -18,6 +18,7 @@ class __dll BaseShape :
 public:
 	BaseShape();
 	virtual ~BaseShape() = default;
+	virtual BaseShape* Clone() const = 0;
 	inline virtual void SelectPoint(int x, int y) override
 	{
 	}

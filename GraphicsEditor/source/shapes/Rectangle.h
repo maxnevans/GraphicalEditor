@@ -18,6 +18,10 @@ namespace Custom {
 		};
 
 	public:
+		inline virtual BaseShape* Clone() const override
+		{
+			return new Rectangle(*this);
+		}
 		virtual void Redraw(Gdiplus::Graphics* const graphics);
 		inline static IShapeFactoryFunctor* CreateFactoryFunctor()
 		{
