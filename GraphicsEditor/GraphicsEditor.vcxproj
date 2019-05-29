@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\core\ConfigManager.h" />
     <ClInclude Include="source\core\FileManager.h" />
     <ClInclude Include="source\core\PluginManager.h" />
     <ClInclude Include="source\core\UserShapeManager.h" />
@@ -34,6 +35,7 @@
     <ClInclude Include="source\shapes\Triangle.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\core\ConfigManager.cpp" />
     <ClCompile Include="source\core\FileManager.cpp" />
     <ClCompile Include="source\core\PluginManager.cpp" />
     <ClCompile Include="source\core\UserShapeManager.cpp" />
@@ -53,6 +55,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Exceptions\Exceptions.vcxproj">
       <Project>{158713b2-e690-4431-b28b-2d6425e35e54}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\libs\pugixml\scripts\pugixml_vs2017.vcxproj">
+      <Project>{07cf01c0-b887-499d-ad9c-799cb6a9fe64}</Project>
     </ProjectReference>
     <ProjectReference Include="..\PluginSupporter\PluginSupporter.vcxproj">
       <Project>{0173f1fa-3f8e-4149-bc43-0ccf91f18a72}</Project>
@@ -140,10 +145,11 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link />
     <Link>
-      <AdditionalDependencies>$(SolutionDir)distrib\x86\$(Configuration)\Exceptions.lib;$(SolutionDir)distrib\x86\$(Configuration)\PluginSupporter.lib;$(SolutionDir)libs\pugixml\pugixml.lib;gdiplus.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)distrib\x86\$(Configuration)\Exceptions.lib;$(SolutionDir)distrib\x86\$(Configuration)\PluginSupporter.lib;$(SolutionDir)distrib\x86\$(Configuration)\pugixml.lib;gdiplus.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -157,9 +163,10 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)distrib\x64\$(Configuration)\Exceptions.lib;$(SolutionDir)distrib\x64\$(Configuration)\PluginSupporter.lib;$(SolutionDir)libs\pugixml\pugixml64.lib;gdiplus.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)distrib\x64\$(Configuration)\Exceptions.lib;$(SolutionDir)distrib\x64\$(Configuration)\PluginSupporter.lib;$(SolutionDir)distrib\x64\$(Configuration)\pugixml.lib;gdiplus.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -176,11 +183,12 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>$(SolutionDir)distrib\x86\$(Configuration)\Exceptions.lib;$(SolutionDir)distrib\x86\$(Configuration)\PluginSupporter.lib;$(SolutionDir)libs\pugixml\pugixml.lib;gdiplus.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)distrib\x86\$(Configuration)\Exceptions.lib;$(SolutionDir)distrib\x86\$(Configuration)\PluginSupporter.lib;$(SolutionDir)distrib\x86\$(Configuration)\pugixml.lib;gdiplus.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -198,11 +206,12 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>$(SolutionDir)distrib\x64\$(Configuration)\Exceptions.lib;$(SolutionDir)distrib\x64\$(Configuration)\PluginSupporter.lib;$(SolutionDir)libs\pugixml\pugixml64.lib;gdiplus.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)distrib\x64\$(Configuration)\Exceptions.lib;$(SolutionDir)distrib\x64\$(Configuration)\PluginSupporter.lib;$(SolutionDir)distrib\x64\$(Configuration)\pugixml.lib;gdiplus.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>

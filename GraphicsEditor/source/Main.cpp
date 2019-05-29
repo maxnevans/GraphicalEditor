@@ -1,11 +1,13 @@
 #include "Main.h"
 
 HWND hMainWnd;
+const ConfigManager::Config* appConfig;
 std::map<WORD, ShapeRegStruct> registeredShapes;
 std::vector<BaseShape*> vecShapes;
 size_t selectedShapeIndex;
 ShapeID currentShapeID;
 ShapesFactory sf;
+ConfigManager* cm;
 PluginManager* pm;
 UserShapeManager* usm;
 Gdiplus::Point points[2];
@@ -128,11 +130,13 @@ LRESULT WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			case WM_CREATE:
 				{
+					cm = new ConfigManager(L"./");
+					appConfig = cm->GetConfig();
 					WORD regIndex = MW_REG_INDEX_START;
 					RegisterCoreShapes(regIndex, &sf);
 					try
 					{
-						pm = new PluginManager(L"plugins");
+						pm = new PluginManager(appConfig->directory.plugins);
 						RegisterPluginShapes(regIndex, pm, &sf);
 					}
 					catch (Exception&)
@@ -140,7 +144,7 @@ LRESULT WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						delete pm;
 						pm = nullptr;
 					}
-					usm = new UserShapeManager(&sf, L"user");
+					usm = new UserShapeManager(&sf, appConfig->directory.userShapes);
 					RegisterUserShapes(regIndex, usm, &sf);
 					InitUI(hWnd);
 					currentShapeID = registeredShapes[0xA0].id;
@@ -191,16 +195,20 @@ LRESULT WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						{
 							DeselectShape(hWnd);
 							std::vector<const BaseShape*> vecShapesConst(vecShapes.begin(), vecShapes.end());
-							FileManager::SaveText(&vecShapesConst, L"test.txt");
+							std::wstring outputFullPath = appConfig->directory.working + L"/" + L"test.txt";
+							FileManager::SaveText(&vecShapesConst, outputFullPath);
 							SetFocus(hWnd);
 						}
 						break;
 					case MW_BID_LOAD:
-						DeselectShape(hWnd);
-						vecShapes.clear();
-						FileManager::LoadText(&sf, &vecShapes, L"test.txt");
-						InvalidateRect(hWnd, NULL, FALSE);
-						SetFocus(hWnd);
+						{
+							DeselectShape(hWnd);
+							vecShapes.clear();
+							std::wstring loadFullPath = appConfig->directory.working + L"/" + L"test.txt";
+							FileManager::LoadText(&sf, &vecShapes, loadFullPath);
+							InvalidateRect(hWnd, NULL, FALSE);
+							SetFocus(hWnd);
+						}
 						break;
 					case MW_BID_DELETE:
 						if (selectedShapeIndex != -1)
@@ -457,7 +465,7 @@ void OnPaint(HWND hWnd)
 	SelectObject(hdcMem, hBmp);
 	Graphics graphics(hdcMem);
 
-	SolidBrush sb(Color::LightGray);
+	SolidBrush sb(appConfig->color.background);
 	graphics.FillRectangle(&sb, 0, 0, MAIN_WND_WIDTH, MAIN_WND_HEIGHT);
 
 	for(BaseShape* shape : vecShapes)
@@ -476,14 +484,14 @@ void AddShape(HWND hWnd, const ShapesFactory* sf)
 {
 	BaseShape* shape = sf->CreateShape(currentShapeID);
 	shape->SetPoints(points[0].X, points[0].Y, points[1].X, points[1].Y);
-	shape->SetColor(0xFFFF0000);
+	shape->SetColor(appConfig->color.shape);
 	vecShapes.push_back(shape);
 }
 
 void AddStretchShape(HWND hWnd, const ShapesFactory* sf)
 {
 	stretchShape = sf->CreateShape(currentShapeID);
-	stretchShape->SetColor(0xFFFF0000);
+	stretchShape->SetColor(appConfig->color.shape);
 }
 
 void SelectNextShape(HWND hWnd)
@@ -491,10 +499,10 @@ void SelectNextShape(HWND hWnd)
 	if (!vecShapes.empty())
 	{
 		if (selectedShapeIndex != -1)
-			vecShapes[selectedShapeIndex]->SetColor(Gdiplus::Color::Red);
+			vecShapes[selectedShapeIndex]->SetColor(appConfig->color.shape);
 		
 		selectedShapeIndex = (selectedShapeIndex + 1) % vecShapes.size();
-		vecShapes[selectedShapeIndex]->SetColor(Gdiplus::Color::Green);
+		vecShapes[selectedShapeIndex]->SetColor(appConfig->color.selection);
 		InvalidateRect(hWnd, NULL, FALSE);
 
 		int x1, y1, x2, y2;
@@ -515,7 +523,7 @@ void DeselectShape(HWND hWnd)
 {
 	if (selectedShapeIndex != -1)
 	{
-		vecShapes[selectedShapeIndex]->SetColor(Gdiplus::Color::Red);
+		vecShapes[selectedShapeIndex]->SetColor(appConfig->color.shape);
 
 		InvalidateRect(hWnd, NULL, FALSE);
 		selectedShapeIndex = -1;

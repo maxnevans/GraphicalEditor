@@ -12,7 +12,7 @@
 #include "core/FileManager.h"
 #include "core/PluginManager.h"
 #include "core/UserShapeManager.h"
-#include "../../libs/pugixml/pugixml.hpp"
+#include "core/ConfigManager.h"
 
 // MAIN WINDOW DEFS
 
@@ -78,6 +78,7 @@ typedef struct _ShapeRegStruct
 	ShapeID id;
 	ShapeType type;
 } ShapeRegStruct;
+
 
 HWND CreateUserShapeSaveWindow(HWND hParent);
 void RegisterMainWindowClass();
