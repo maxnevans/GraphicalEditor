@@ -68,7 +68,7 @@ HWND CreateUserShapeSaveWindow(HWND hParent)
 
 	HWND hWnd = CreateWindowW(US_WND_CLASS, US_WND_NAME,
 		WS_VISIBLE | WS_SYSMENU & ~WS_SIZEBOX & ~WS_MAXIMIZEBOX | WS_CLIPCHILDREN,
-		(parentRect.right - parentRect.left - US_WND_WIDTH) / 2, (parentRect.bottom - parentRect.top - US_WND_HEIGHT) / 2,
+		parentRect.left + (parentRect.right - parentRect.left - US_WND_WIDTH) / 2, parentRect.top + (parentRect.bottom - parentRect.top - US_WND_HEIGHT) / 2,
 		US_WND_WIDTH, US_WND_HEIGHT, NULL, NULL, GetModuleHandle(NULL), 0);
 
 	if (hWnd == NULL)
