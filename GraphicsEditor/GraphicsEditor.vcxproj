@@ -22,6 +22,7 @@
     <ClInclude Include="source\core\FileManager.h" />
     <ClInclude Include="source\core\PluginManager.h" />
     <ClInclude Include="source\core\UserShapeManager.h" />
+    <ClInclude Include="source\Main.h" />
     <ClInclude Include="source\shapes\Circle.h" />
     <ClInclude Include="source\shapes\ComplexShape.h" />
     <ClInclude Include="source\shapes\DefaultShapes.h" />
