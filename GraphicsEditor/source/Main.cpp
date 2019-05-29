@@ -24,19 +24,7 @@ int WINAPI wWinMain(
 		ULONG_PTR						gdiplusToken;
 		Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
-		WNDCLASSEX wcex = { 0 };
-		wcex.cbSize = sizeof(wcex);
-		wcex.hInstance = hInstance;
-		wcex.style = CS_HREDRAW | CS_VREDRAW;
-		wcex.lpfnWndProc = WndProc;
-		wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-		wcex.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-		wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-		wcex.lpszClassName = WND_CLASS;
-
-		DWORD retVal = RegisterClassEx(&wcex);
-		if (!retVal) 
-			throw WinException(L"register window");
+		RegisterWindowClass();
 
 		RECT rDesk;
 		GetWindowRect(GetDesktopWindow(), &rDesk);
@@ -45,9 +33,8 @@ int WINAPI wWinMain(
 			WS_VISIBLE | WS_OVERLAPPEDWINDOW & ~WS_SIZEBOX & ~WS_MAXIMIZEBOX | WS_CLIPCHILDREN,
 			(rDesk.right - WND_WIDTH) / 2, (rDesk.bottom - WND_HEIGHT) / 2,
 			WND_WIDTH, WND_HEIGHT, NULL, NULL, hInstance, 0);
-		if (hWnd == NULL) 
+		if (hWnd == NULL)
 			throw WinException(L"create window");
-		UpdateWindow(hWnd);
 
 		MSG msg = { 0 };
 
@@ -70,6 +57,23 @@ int WINAPI wWinMain(
 		MessageBox(NULL, L"Undefined error!", L"Undefined error", MB_OK | MB_ICONERROR);
 		exit(-1);
 	}
+}
+
+void RegisterWindowClass()
+{
+	WNDCLASSEX wcex = { 0 };
+	wcex.cbSize = sizeof(wcex);
+	wcex.hInstance = GetModuleHandle(NULL);
+	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc = WndProc;
+	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wcex.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+	wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+	wcex.lpszClassName = WND_CLASS;
+
+	DWORD retVal = RegisterClassEx(&wcex);
+	if (!retVal)
+		throw WinException(L"register window");
 }
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)

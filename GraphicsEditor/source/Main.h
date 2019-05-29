@@ -49,6 +49,7 @@ typedef struct _ShapeRegStruct
 	ShapeType type;
 } ShapeRegStruct;
 
+void RegisterWindowClass();
 LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void InitUI(HWND);
 void RegisterCoreShapes(WORD& regIndex, ShapesFactory* sf);
