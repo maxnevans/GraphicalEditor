@@ -143,7 +143,7 @@
     </ClCompile>
     <Link />
     <Link>
-      <AdditionalDependencies>$(SolutionDir)distrib\x86\$(Configuration)\Exceptions.lib;$(SolutionDir)distrib\x86\$(Configuration)\PluginSupporter.lib;gdiplus.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)distrib\x86\$(Configuration)\Exceptions.lib;$(SolutionDir)distrib\x86\$(Configuration)\PluginSupporter.lib;$(SolutionDir)libs\pugixml\pugixml.lib;gdiplus.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -159,7 +159,7 @@
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)distrib\x64\$(Configuration)\Exceptions.lib;$(SolutionDir)distrib\x64\$(Configuration)\PluginSupporter.lib;gdiplus.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)distrib\x64\$(Configuration)\Exceptions.lib;$(SolutionDir)distrib\x64\$(Configuration)\PluginSupporter.lib;$(SolutionDir)libs\pugixml\pugixml64.lib;gdiplus.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -180,7 +180,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>$(SolutionDir)distrib\x86\$(Configuration)\Exceptions.lib;$(SolutionDir)distrib\x86\$(Configuration)\PluginSupporter.lib;gdiplus.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)distrib\x86\$(Configuration)\Exceptions.lib;$(SolutionDir)distrib\x86\$(Configuration)\PluginSupporter.lib;$(SolutionDir)libs\pugixml\pugixml.lib;gdiplus.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -202,7 +202,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>$(SolutionDir)distrib\x64\$(Configuration)\Exceptions.lib;$(SolutionDir)distrib\x64\$(Configuration)\PluginSupporter.lib;gdiplus.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)distrib\x64\$(Configuration)\Exceptions.lib;$(SolutionDir)distrib\x64\$(Configuration)\PluginSupporter.lib;$(SolutionDir)libs\pugixml\pugixml64.lib;gdiplus.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>

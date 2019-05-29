@@ -12,6 +12,7 @@
 #include "core/FileManager.h"
 #include "core/PluginManager.h"
 #include "core/UserShapeManager.h"
+#include "../../libs/pugixml/pugixml.hpp"
 
 // MAIN WINDOW DEFS
 
