@@ -6,11 +6,13 @@ WinException::WinException(const wchar_t* message)
 	BaseException(message)
 {
 	this->code = GetLastError();
+
+	std::wstringstream ss;
+	ss << BaseException::what() << L" with code [" << this->code << "]";
+	this->message = std::wstring(ss.str());
 }
 
 const wchar_t* WinException::what() const noexcept
 {
-	std::wstringstream ss;
-	ss << BaseException::what() << L"with code [" << this->code << "]";
-	return ss.str().c_str();
+	return this->message.c_str();
 }

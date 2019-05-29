@@ -12,5 +12,6 @@ public:
 
 private:
 	unsigned long code;
+	std::wstring message;
 };
 
