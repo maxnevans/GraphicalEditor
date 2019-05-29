@@ -38,7 +38,6 @@ PluginManager::PluginManager(std::wstring directory)
 		IPluginLibrary* pluginLib = plf();
 
 		CustomPlugin cp;
-		ZeroMemory(&cp, sizeof(cp));
 		cp.factory = pluginLib->GetShapeFactory();
 		cp.name = pluginLib->GetShapeName();
 
