@@ -1,5 +1,6 @@
 #include "Main.h"
 
+HWND hMainWnd;
 std::map<WORD, ShapeRegStruct> registeredShapes;
 std::vector<BaseShape*> vecShapes;
 size_t selectedShapeIndex;
@@ -9,7 +10,7 @@ PluginManager* pm;
 UserShapeManager* usm;
 Gdiplus::Point points[2];
 BaseShape* stretchShape;
-HWND hInputX1, hInputY1, hInputX2, hInputY2;
+HWND hInputX1, hInputY1, hInputX2, hInputY2, hInputShapeName, hInputFileName;
 
 int WINAPI wWinMain(
 	_In_ HINSTANCE hInstance,
@@ -24,16 +25,17 @@ int WINAPI wWinMain(
 		ULONG_PTR						gdiplusToken;
 		Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
-		RegisterWindowClass();
+		RegisterMainWindowClass();
+		RegisterUserShapeWindowClass();
 
 		RECT rDesk;
 		GetWindowRect(GetDesktopWindow(), &rDesk);
 
-		HWND hWnd = CreateWindowW(WND_CLASS, WND_NAME, 
+		hMainWnd = CreateWindowW(MAIN_WND_CLASS, MAIN_WND_NAME,
 			WS_VISIBLE | WS_OVERLAPPEDWINDOW & ~WS_SIZEBOX & ~WS_MAXIMIZEBOX | WS_CLIPCHILDREN,
-			(rDesk.right - WND_WIDTH) / 2, (rDesk.bottom - WND_HEIGHT) / 2,
-			WND_WIDTH, WND_HEIGHT, NULL, NULL, hInstance, 0);
-		if (hWnd == NULL)
+			(rDesk.right - MAIN_WND_WIDTH) / 2, (rDesk.bottom - MAIN_WND_HEIGHT) / 2,
+			MAIN_WND_WIDTH, MAIN_WND_HEIGHT, NULL, NULL, hInstance, 0);
+		if (hMainWnd == NULL)
 			throw WinException(L"create window");
 
 		MSG msg = { 0 };
@@ -59,24 +61,66 @@ int WINAPI wWinMain(
 	}
 }
 
-void RegisterWindowClass()
+HWND CreateUserShapeSaveWindow(HWND hParent)
+{
+	RECT parentRect;
+	GetWindowRect(hParent, &parentRect);
+
+	HWND hWnd = CreateWindowW(US_WND_CLASS, US_WND_NAME,
+		WS_VISIBLE | WS_SYSMENU & ~WS_SIZEBOX & ~WS_MAXIMIZEBOX | WS_CLIPCHILDREN,
+		(parentRect.right - parentRect.left - US_WND_WIDTH) / 2, (parentRect.bottom - parentRect.top - US_WND_HEIGHT) / 2,
+		US_WND_WIDTH, US_WND_HEIGHT, NULL, NULL, GetModuleHandle(NULL), 0);
+
+	if (hWnd == NULL)
+		throw WinException(L"create UserShape window failed");
+
+	DrawStatic(hWnd, US_SC_SHAPENAME, 20, 10, US_S_WIDTH, US_S_HEIGHT);
+	DrawStatic(hWnd, US_SC_FILENAME, 20, 50, US_S_WIDTH, US_S_HEIGHT);
+	hInputShapeName = DrawInput(hWnd, US_S_WIDTH + 30, 10, US_B_WIDTH, US_B_HEIGHT, NULL);
+	hInputFileName = DrawInput(hWnd, US_S_WIDTH + 30, 50, US_B_WIDTH, US_B_HEIGHT, NULL);
+	DrawButton(hWnd, US_BC_SAVE, 20, 90, US_B_WIDTH, US_B_HEIGHT, US_BID_SAVE);
+	DrawButton(hWnd, US_BC_CANCEL, US_B_WIDTH + 30, 90, US_B_WIDTH, US_B_HEIGHT, US_BID_CANCEL);
+	
+
+	return hWnd;
+}
+
+void RegisterUserShapeWindowClass()
 {
 	WNDCLASSEX wcex = { 0 };
 	wcex.cbSize = sizeof(wcex);
 	wcex.hInstance = GetModuleHandle(NULL);
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc = WndProc;
+	wcex.lpfnWndProc = UserShapeWndProc;
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wcex.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-	wcex.lpszClassName = WND_CLASS;
+	wcex.lpszClassName = US_WND_CLASS;
+	wcex.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_BACKGROUND) + 1;
 
 	DWORD retVal = RegisterClassEx(&wcex);
 	if (!retVal)
-		throw WinException(L"register window");
+		throw WinException(L"register UserShape window");
 }
 
-LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+void RegisterMainWindowClass()
+{
+	WNDCLASSEX wcex = { 0 };
+	wcex.cbSize = sizeof(wcex);
+	wcex.hInstance = GetModuleHandle(NULL);
+	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc = MainWndProc;
+	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wcex.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+	wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+	wcex.lpszClassName = MAIN_WND_CLASS;
+
+	DWORD retVal = RegisterClassEx(&wcex);
+	if (!retVal)
+		throw WinException(L"register Main window");
+}
+
+LRESULT WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	try
 	{
@@ -84,7 +128,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			case WM_CREATE:
 				{
-					WORD regIndex = REG_INDEX_START;
+					WORD regIndex = MW_REG_INDEX_START;
 					RegisterCoreShapes(regIndex, &sf);
 					try
 					{
@@ -143,7 +187,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			case WM_COMMAND:
 				switch (LOWORD(wParam))
 				{
-					case BID_SAVE:
+					case MW_BID_SAVE:
 						{
 							DeselectShape(hWnd);
 							std::vector<const BaseShape*> vecShapesConst(vecShapes.begin(), vecShapes.end());
@@ -151,14 +195,14 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 							SetFocus(hWnd);
 						}
 						break;
-					case BID_LOAD:
+					case MW_BID_LOAD:
 						DeselectShape(hWnd);
 						vecShapes.clear();
 						FileManager::LoadText(&sf, &vecShapes, L"test.txt");
 						InvalidateRect(hWnd, NULL, FALSE);
 						SetFocus(hWnd);
 						break;
-					case BID_DELETE:
+					case MW_BID_DELETE:
 						if (selectedShapeIndex != -1)
 						{
 							size_t tempIndex = selectedShapeIndex;
@@ -173,7 +217,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						}
 						SetFocus(hWnd);
 						break;
-					case BID_EDIT:
+					case MW_BID_EDIT:
 						{
 							wchar_t buffer[256];
 
@@ -194,11 +238,26 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 							SetFocus(hWnd);
 						}
 						break;
-					case BID_SAVESHAPE:
+					case MW_BID_SAVESHAPE:
+						CreateUserShapeSaveWindow(hWnd);
+						EnableWindow(hWnd, FALSE);
+						break;
+					case MW_AID_SAVEUSHAPE:
 						{
+							wchar_t buffer[256];
+							GetWindowText(hInputShapeName, buffer, 256);
+							std::wstring shapeName(buffer);
+							GetWindowText(hInputFileName, buffer, 256);
+							std::wstring fileName(buffer);
+
 							DeselectShape(hWnd);
 							std::vector<const BaseShape*> vecShapesConst(vecShapes.begin(), vecShapes.end());
-							usm->SaveUserShape(L"some", L"Super user shape", vecShapesConst);
+							usm->SaveUserShape(fileName, shapeName, vecShapesConst);
+							SetFocus(hWnd);
+						}
+					case MW_AID_CANCELUSHAPE:
+						{
+							EnableWindow(hWnd, TRUE);
 							SetFocus(hWnd);
 						}
 						break;
@@ -231,6 +290,31 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		MessageBox(NULL, error.what(), L"Fatal error", MB_OK | MB_ICONERROR);
 		exit(-1);
 	}
+}
+
+LRESULT WINAPI UserShapeWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMsg)
+	{
+		case WM_COMMAND:
+			switch (LOWORD(wParam))
+			{
+				case US_BID_SAVE:
+					SendMessage(hMainWnd, WM_COMMAND, MW_AID_SAVEUSHAPE, reinterpret_cast<LPARAM>(hWnd));
+					DestroyWindow(hWnd);
+					return 0;
+				case US_BID_CANCEL:
+					SendMessage(hMainWnd, WM_COMMAND, MW_AID_CANCELUSHAPE, reinterpret_cast<LPARAM>(hWnd));
+					DestroyWindow(hWnd);
+					return 0;
+			}
+			break;
+		case WM_CLOSE:
+			SendMessage(GetParent(hWnd), WM_COMMAND, MW_AID_CANCELUSHAPE, reinterpret_cast<LPARAM>(hWnd));
+			DestroyWindow(hWnd);
+			return 0;
+	}
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
 void InitUI(HWND hWnd)
@@ -273,15 +357,23 @@ void InitUI(HWND hWnd)
 
 	SetMenu(hWnd, mainMenu);
 
-	hInputX1 = DrawInput(hWnd, B_WIDTH * 0, 0, B_WIDTH, B_HEIGHT, NULL);
-	hInputY1 = DrawInput(hWnd, B_WIDTH * 1, 0, B_WIDTH, B_HEIGHT, NULL);
-	hInputX2 = DrawInput(hWnd, B_WIDTH * 2, 0, B_WIDTH, B_HEIGHT, NULL);
-	hInputY2 = DrawInput(hWnd, B_WIDTH * 3, 0, B_WIDTH, B_HEIGHT, NULL);
-	DrawButton(hWnd, BC_EDIT, B_WIDTH * 4, 0, B_WIDTH, B_HEIGHT, BID_EDIT);
-	DrawButton(hWnd, BC_DELETE, B_WIDTH * 5, 0, B_WIDTH, B_HEIGHT, BID_DELETE);
-	DrawButton(hWnd, BC_SAVE, B_WIDTH * 6, 0, B_WIDTH, B_HEIGHT, BID_SAVE);
-	DrawButton(hWnd, BC_LOAD, B_WIDTH * 7, 0, B_WIDTH, B_HEIGHT, BID_LOAD);
-	DrawButton(hWnd, BC_SAVESHAPE, B_WIDTH * 8, 0, B_WIDTH, B_HEIGHT, BID_SAVESHAPE);
+	hInputX1 = DrawInput(hWnd, MW_B_WIDTH * 0, 0, MW_B_WIDTH, MW_B_HEIGHT, NULL);
+	hInputY1 = DrawInput(hWnd, MW_B_WIDTH * 1, 0, MW_B_WIDTH, MW_B_HEIGHT, NULL);
+	hInputX2 = DrawInput(hWnd, MW_B_WIDTH * 2, 0, MW_B_WIDTH, MW_B_HEIGHT, NULL);
+	hInputY2 = DrawInput(hWnd, MW_B_WIDTH * 3, 0, MW_B_WIDTH, MW_B_HEIGHT, NULL);
+	EnableWindow(hInputX1, FALSE);
+	EnableWindow(hInputX2, FALSE);
+	EnableWindow(hInputY1, FALSE);
+	EnableWindow(hInputY2, FALSE);
+	SetInputFilterNumbersOnly(hInputX1, 4);
+	SetInputFilterNumbersOnly(hInputX2, 4);
+	SetInputFilterNumbersOnly(hInputY1, 4);
+	SetInputFilterNumbersOnly(hInputY2, 4);
+	DrawButton(hWnd, MW_BC_EDIT, MW_B_WIDTH * 4, 0, MW_B_WIDTH, MW_B_HEIGHT, MW_BID_EDIT);
+	DrawButton(hWnd, MW_BC_DELETE, MW_B_WIDTH * 5, 0, MW_B_WIDTH, MW_B_HEIGHT, MW_BID_DELETE);
+	DrawButton(hWnd, MW_BC_SAVE, MW_B_WIDTH * 6, 0, MW_B_WIDTH, MW_B_HEIGHT, MW_BID_SAVE);
+	DrawButton(hWnd, MW_BC_LOAD, MW_B_WIDTH * 7, 0, MW_B_WIDTH, MW_B_HEIGHT, MW_BID_LOAD);
+	DrawButton(hWnd, MW_BC_SAVESHAPE, MW_B_WIDTH * 8, 0, MW_B_WIDTH, MW_B_HEIGHT, MW_BID_SAVESHAPE);
 }
 
 void RegisterCoreShapes(WORD& regIndex, ShapesFactory* sf)
@@ -331,12 +423,25 @@ HWND DrawInput(HWND hParent, int x, int y, int width, int height, WORD id)
 	if (!hInput)
 		throw WinException(L"input");
 
-	LONG styles = GetWindowLong(hInput, GWL_STYLE);
-	SetWindowLong(hInput, GWL_STYLE, styles | ES_NUMBER);
-	SendMessage(hInput, EM_SETLIMITTEXT, 4, 0);
-	EnableWindow(hInput, FALSE);
+	
 
 	return hInput;
+}
+
+void DrawStatic(HWND hParent, std::wstring caption, int x, int y, int width, int height)
+{
+	HWND hStatic = CreateWindow(L"Static", caption.c_str(), WS_CHILD | WS_VISIBLE, x, y, width, height,
+		hParent, NULL, GetModuleHandle(NULL), NULL);
+
+	if (!hStatic)
+		throw WinException(L"static window failed to create");
+}
+
+void SetInputFilterNumbersOnly(HWND hInput, int amountAllowed)
+{
+	LONG styles = GetWindowLong(hInput, GWL_STYLE);
+	SetWindowLong(hInput, GWL_STYLE, styles | ES_NUMBER);
+	SendMessage(hInput, EM_SETLIMITTEXT, amountAllowed, 0);
 }
 
 void OnPaint(HWND hWnd)
@@ -348,12 +453,12 @@ void OnPaint(HWND hWnd)
 
 	hdc = BeginPaint(hWnd, &ps);
 	HDC hdcMem = CreateCompatibleDC(hdc);
-	HBITMAP hBmp = CreateCompatibleBitmap(hdc, WND_WIDTH, WND_HEIGHT);
+	HBITMAP hBmp = CreateCompatibleBitmap(hdc, MAIN_WND_WIDTH, MAIN_WND_HEIGHT);
 	SelectObject(hdcMem, hBmp);
 	Graphics graphics(hdcMem);
 
 	SolidBrush sb(Color::LightGray);
-	graphics.FillRectangle(&sb, 0, 0, WND_WIDTH, WND_HEIGHT);
+	graphics.FillRectangle(&sb, 0, 0, MAIN_WND_WIDTH, MAIN_WND_HEIGHT);
 
 	for(BaseShape* shape : vecShapes)
 		shape->Redraw(&graphics);
@@ -361,7 +466,7 @@ void OnPaint(HWND hWnd)
 	if (stretchShape)
 		stretchShape->Redraw(&graphics);
 
-	BitBlt(hdc, 0, 0, WND_WIDTH, WND_HEIGHT, hdcMem, 0, 0, SRCCOPY);
+	BitBlt(hdc, 0, 0, MAIN_WND_WIDTH, MAIN_WND_HEIGHT, hdcMem, 0, 0, SRCCOPY);
 	DeleteDC(hdcMem);
 	DeleteObject(hBmp);
 	EndPaint(hWnd, &ps);
