@@ -49,10 +49,10 @@ void ComplexShape::SetPoints(int x1, int y1, int x2, int y2)
 		this->shapes[i]->GetPoints(shapeX1, shapeY1, shapeX2, shapeY2);
 
 
-		shapeX1 = shapeX1 * distortionX + this->x;
-		shapeY1 = shapeY1 * distortionY + this->y;
-		shapeX2 = shapeX2 * distortionX + this->x;
-		shapeY2 = shapeY2 * distortionY + this->y;
+		shapeX1 = static_cast<int>(shapeX1 * distortionX + this->x);
+		shapeY1 = static_cast<int>(shapeY1 * distortionY + this->y);
+		shapeX2 = static_cast<int>(shapeX2 * distortionX + this->x);
+		shapeY2 = static_cast<int>(shapeY2 * distortionY + this->y);
 
 		this->gfxShapes[i]->SetPoints(shapeX1, shapeY1, shapeX2, shapeY2);
 	}
