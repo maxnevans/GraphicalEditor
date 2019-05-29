@@ -44,6 +44,7 @@ public:
 		return this->name.c_str();
 	}
 	virtual void SetPoints(int x1, int y1, int x2, int y2) override;
+	virtual void SetColor(Gdiplus::ARGB color) override;
 	inline static IShapeFactoryFunctor* CreateFactoryFunctor(std::wstring name, std::vector<const BaseShape*> shapes)
 	{
 		return new ComplexShapeFactoryFunctor(name, shapes);

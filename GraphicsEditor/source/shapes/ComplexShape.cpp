@@ -58,6 +58,12 @@ void ComplexShape::SetPoints(int x1, int y1, int x2, int y2)
 	}
 }
 
+void ComplexShape::SetColor(Gdiplus::ARGB color)
+{
+	for (BaseShape* shape : this->gfxShapes)
+		shape->SetColor(color);
+}
+
 ComplexShape::ComplexShapeFactoryFunctor::~ComplexShapeFactoryFunctor()
 {
 	for (const BaseShape* shape : this->shapes)
