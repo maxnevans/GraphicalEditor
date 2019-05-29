@@ -5,6 +5,8 @@
 #include <shlwapi.h>
 #include "../shapes/ComplexShape.h"
 #include <filesystem>
+#include <fstream>
+#include <sstream>
 
 UserShapeManager::UserShapeManager(const ShapesFactory* sf, std::wstring directory)
 {
@@ -29,13 +31,15 @@ UserShapeManager::UserShapeManager(const ShapesFactory* sf, std::wstring directo
 			continue;
 
 		std::wstring userShapeFilePath = directory + L"\\" + fileName;
+
+		MetaData meta;
+		this->ReadMetaFromFile(fileName, meta);
 		
 		std::vector<BaseShape*> shapes;
-		FileManager::LoadText(sf, &shapes, userShapeFilePath);
+		FileManager::LoadText(sf, &shapes, userShapeFilePath, METADATA_LINES_COUNT);
 
 		UserShape us;
-		ZeroMemory(&us, sizeof(us));
-		us.name = fileName;
+		us.name = meta.shapeName;
 		us.factoryFunctor = ComplexShape::CreateFactoryFunctor(us.name, 
 			std::vector<const BaseShape*>(shapes.begin(), shapes.end()));
 
@@ -60,6 +64,10 @@ void UserShapeManager::SaveUserShape(std::wstring fileName, std::wstring shapeNa
 		throw Exception(std::wstring(L"Failed to create UserShape directory: " + this->directory).c_str());
 
 	FindClose(hDirectory);
+
+	MetaData meta;
+	meta.shapeName = shapeName;
+	this->WriteMetaToFile(fileName + USER_SHAPES_EXTENSION, meta);
 
 	std::vector<BaseShape*> shapesToNormalize;
 	for (const BaseShape* shape : shapes)
@@ -100,4 +108,49 @@ void UserShapeManager::NormalizeShapes(std::vector<BaseShape*>& shapes)
 
 		shape->SetPoints(x1, y1, x2, y2);
 	}
+}
+
+void UserShapeManager::WriteMetaToFile(std::wstring fileName, UserShapeManager::MetaData& meta) const
+{
+	std::wstring fullPath = this->directory + L"\\" + fileName;
+
+	std::wofstream file(fullPath);
+
+	if (!file.is_open())
+	{
+		std::wstringstream ss;
+		ss << L"Failed to open file [" << fileName << L"]";
+		throw Exception(ss.str().c_str());
+	}
+
+	file << meta.shapeName << std::endl;
+
+	file.close();
+}
+
+void UserShapeManager::ReadMetaFromFile(std::wstring fileName, UserShapeManager::MetaData& meta)
+{
+	std::wstring fullPath = this->directory + L"\\" + fileName;
+
+	std::wifstream file(fullPath);
+
+	if (!file.is_open())
+	{
+		std::wstringstream ss;
+		ss << L"Failed to open file [" << fileName << L"]";
+		throw Exception(ss.str().c_str());
+	}
+
+	std::wstringstream buffer;
+	for (wchar_t c = file.get(); file.good() && c != '\n'; c = file.get())
+	{
+		buffer << c;
+	}
+
+	std::getline(buffer, meta.shapeName);
+
+	if (buffer.fail())
+		throw Exception(L"Failed to load meta data in UserShapeManager");
+
+	file.close();
 }
