@@ -5,7 +5,7 @@
 
 void FileManager::SaveText(const std::vector<const BaseShape*>* shapes, std::wstring filename)
 {
-	std::wofstream file(filename);
+	std::wofstream file(filename, std::ios::app);
 
 	if (!file.is_open())
 	{
@@ -25,7 +25,8 @@ void FileManager::SaveText(const std::vector<const BaseShape*>* shapes, std::wst
 }
 
 void FileManager::LoadText(const ShapesFactory* shapesFactory, 
-	std::vector<BaseShape*>* shapes, std::wstring filename)
+	std::vector<BaseShape*>* shapes, std::wstring filename,
+	int offsetLines)
 {
 	std::wifstream file(filename);
 
@@ -43,6 +44,10 @@ void FileManager::LoadText(const ShapesFactory* shapesFactory,
 	}
 
 	std::wstring shapeText;
+
+	for (int i = 0; i < offsetLines; i++)
+		std::getline(buffer, shapeText);
+
 	std::getline(buffer, shapeText);
 	while (buffer.good())
 	{
@@ -58,5 +63,7 @@ void FileManager::LoadText(const ShapesFactory* shapesFactory,
 
 		std::getline(buffer, shapeText);
 	}
+
+	file.close();
 
 }
