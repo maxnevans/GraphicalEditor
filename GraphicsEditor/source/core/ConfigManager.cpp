@@ -16,8 +16,8 @@ const ConfigManager::Config ConfigManager::DEFAULT_CONFIG = {
 		.selection = Gdiplus::ARGB(0xFF4D77FF)
 	},
 	.directory = {
-		.working = L"user/work",
-		.userShapes = L"user/shapes",
+		.working = L"./",
+		.userShapes = L"user",
 		.plugins = L"plugins"
 	}
 };
