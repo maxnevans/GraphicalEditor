@@ -1,8 +1,8 @@
-![program interface](screenshots/001.jpg)
-
 # Simple Graphics Editor
 
-- Version: **1.0.1**
+![program interface](screenshots/002.jpg)
+
+- Version: **1.0.2**
 - Performed by: **[Maxim Scherbakov](https://t.me/maxnevans)**
 - External libraries:
   - [GDI+](https://docs.microsoft.com/en-us/windows/desktop/gdiplus/-gdiplus-gdi-start)
